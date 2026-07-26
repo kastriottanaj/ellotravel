@@ -193,6 +193,14 @@ const de: Dictionary = {
     rights: "Alle Rechte vorbehalten.",
     builtIn: "Klina, Kosovo",
   },
+  cookies: {
+    title: "Datenschutz und Cookies",
+    body:
+      "Wir verwenden optionale Google-Analytics-Cookies, um zu verstehen, wie die Website genutzt wird, und sie zu verbessern. Sie werden ohne Ihre Zustimmung nicht aktiviert.",
+    accept: "Analytics akzeptieren",
+    reject: "Ablehnen",
+    settings: "Cookie-Einstellungen",
+  },
   notFound: {
     title: "Seite nicht gefunden",
     body: "Die gesuchte Seite existiert nicht oder wurde verschoben.",

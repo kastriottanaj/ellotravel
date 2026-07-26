@@ -194,6 +194,14 @@ const sq = {
     rights: "Të gjitha të drejtat e rezervuara.",
     builtIn: "Klinë, Kosovë",
   },
+  cookies: {
+    title: "Privatësia dhe cookies",
+    body:
+      "Përdorim cookies opsionale të Google Analytics për të kuptuar si përdoret faqja dhe për ta përmirësuar. Nuk aktivizohen pa pëlqimin tuaj.",
+    accept: "Prano analytics",
+    reject: "Refuzo",
+    settings: "Cilësimet e cookies",
+  },
   notFound: {
     title: "Faqja nuk u gjet",
     body: "Faqja që kërkoni nuk ekziston ose është zhvendosur.",

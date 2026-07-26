@@ -1,25 +1,146 @@
+"use client";
+
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui";
+import type { Dictionary } from "@/i18n/types";
 
-/**
- * Google Analytics 4, via the official `@next/third-parties` integration.
- *
- * The measurement ID is read from the environment rather than hardcoded so a
- * staging or preview deploy can point at its own property — or, by leaving the
- * variable unset, report nothing at all and keep test traffic out of the
- * agency's numbers. Local development is unconfigured by default for the same
- * reason.
- *
- * Route changes need no extra wiring: App Router navigation goes through
- * history.pushState, which GA4's enhanced measurement already counts as a page
- * view.
- *
- * To measure a specific interaction — an enquiry submitted, a WhatsApp tap —
- * call `sendGAEvent` from `@next/third-parties/google` inside a Client
- * Component.
- */
-export function Analytics() {
-  const gaId = process.env.NEXT_PUBLIC_GA_ID;
-  if (!gaId) return null;
+const STORAGE_KEY = "ellotravel.analytics-consent";
 
-  return <GoogleAnalytics gaId={gaId} />;
+type Consent = "accepted" | "rejected" | null;
+
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
+function queueConsent(status: "granted" | "denied") {
+  window.dataLayer = window.dataLayer ?? [];
+  window.gtag =
+    window.gtag ??
+    function gtag(...args: unknown[]) {
+      window.dataLayer?.push(args);
+    };
+
+  window.gtag("consent", "default", {
+    analytics_storage: "denied",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+  });
+  window.gtag("consent", "update", {
+    analytics_storage: status,
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+  });
+}
+
+function removeAnalyticsCookies() {
+  const analyticsCookie = /^(?:_ga|_gid|_gat)/;
+  const domains = ["", location.hostname, ".ellotravel.net"];
+
+  for (const entry of document.cookie.split(";")) {
+    const name = entry.split("=")[0]?.trim();
+    if (!name || !analyticsCookie.test(name)) continue;
+
+    for (const domain of domains) {
+      document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax${domain ? `; Domain=${domain}` : ""}`;
+    }
+  }
+}
+
+export function AnalyticsConsent({
+  gaId,
+  copy,
+}: {
+  gaId?: string;
+  copy: Dictionary["cookies"];
+}) {
+  const [consent, setConsent] = useState<Consent>(null);
+  const [ready, setReady] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  useEffect(() => {
+    if (!gaId) return;
+
+    const timer = window.setTimeout(() => {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved === "accepted" || saved === "rejected") {
+        if (saved === "accepted") queueConsent("granted");
+        setConsent(saved);
+      }
+      setReady(true);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [gaId]);
+
+  if (!gaId || !ready) return null;
+
+  const accept = () => {
+    queueConsent("granted");
+    localStorage.setItem(STORAGE_KEY, "accepted");
+    setConsent("accepted");
+    setSettingsOpen(false);
+  };
+
+  const reject = () => {
+    const wasAccepted = consent === "accepted";
+    if (wasAccepted) {
+      queueConsent("denied");
+      removeAnalyticsCookies();
+    }
+
+    localStorage.setItem(STORAGE_KEY, "rejected");
+    setConsent("rejected");
+    setSettingsOpen(false);
+
+    // Reload after withdrawal so registered analytics listeners cannot send
+    // more events during this browser session.
+    if (wasAccepted) location.reload();
+  };
+
+  const showBanner = consent === null || settingsOpen;
+
+  return (
+    <>
+      {consent === "accepted" && <GoogleAnalytics gaId={gaId} />}
+
+      {showBanner ? (
+        <section
+          aria-label={copy.title}
+          className="fixed inset-x-3 bottom-3 z-[100] mx-auto max-w-3xl rounded-2xl border border-ocean-100 bg-white p-5 shadow-lift sm:bottom-5 sm:p-6"
+        >
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="max-w-xl">
+              <h2 className="font-display text-xl font-semibold text-ocean-950">
+                {copy.title}
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-ocean-700">
+                {copy.body}
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-wrap gap-2">
+              <Button type="button" variant="outline" onClick={reject}>
+                {copy.reject}
+              </Button>
+              <Button type="button" onClick={accept}>
+                {copy.accept}
+              </Button>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setSettingsOpen(true)}
+          className="fixed bottom-3 left-3 z-[90] rounded-full border border-ocean-200 bg-white px-3 py-2 text-xs font-semibold text-ocean-700 shadow-card transition hover:border-ocean-300 hover:text-ocean-950 sm:bottom-5 sm:left-5"
+        >
+          {copy.settings}
+        </button>
+      )}
+    </>
+  );
 }

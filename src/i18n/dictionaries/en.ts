@@ -190,6 +190,14 @@ const en: Dictionary = {
     rights: "All rights reserved.",
     builtIn: "Klina, Kosovo",
   },
+  cookies: {
+    title: "Privacy and cookies",
+    body:
+      "We use optional Google Analytics cookies to understand how the site is used and improve it. They are not activated without your consent.",
+    accept: "Accept analytics",
+    reject: "Reject",
+    settings: "Cookie settings",
+  },
   notFound: {
     title: "Page not found",
     body: "The page you're looking for doesn't exist or has moved.",
