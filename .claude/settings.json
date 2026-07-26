@@ -23,7 +23,12 @@
       "Bash(gh auth *)",
       "Bash(git config *)",
       "Bash(git add *)",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git ls-tree *)",
+      "Bash(gh repo *)",
+      "Bash(git commit -q -m 'Allow git push and repo-inspection commands in project settings *)"
     ],
     "additionalDirectories": [
       "/Users/kastriot/Desktop/ellotravel/src/app",
