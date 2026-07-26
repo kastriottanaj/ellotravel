@@ -108,7 +108,7 @@ export function SiteHeader({
 
       <div className="container-page flex h-16 items-center justify-between gap-4 lg:h-20">
         <Link href={`/${locale}`} className="shrink-0" aria-label="Ello Travel">
-          <Logo />
+          <Logo priority className="w-[4.25rem] lg:w-[5.25rem]" />
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">

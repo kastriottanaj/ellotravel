@@ -20,7 +20,7 @@ export function SiteFooter({
     <footer className="mt-24 border-t border-ocean-100 bg-sand-50">
       <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="sm:col-span-2 lg:col-span-1">
-          <Logo />
+          <Logo className="w-28" />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-ocean-700">
             {dict.footer.tagline}
           </p>
