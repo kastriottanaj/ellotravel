@@ -28,7 +28,10 @@
       "Bash(git push *)",
       "Bash(git ls-tree *)",
       "Bash(gh repo *)",
-      "Bash(git commit -q -m 'Allow git push and repo-inspection commands in project settings *)"
+      "Bash(git commit -q -m 'Allow git push and repo-inspection commands in project settings *)",
+      "Bash(curl -s http://localhost:3111/en)",
+      "Bash(git fetch *)",
+      "Bash(pkill -f \"next start -p 3111\")"
     ],
     "additionalDirectories": [
       "/Users/kastriot/Desktop/ellotravel/src/app",
