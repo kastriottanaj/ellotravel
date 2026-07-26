@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "../globals.css";
+import { Analytics } from "@/components/analytics";
 import { ContactFab } from "@/components/contact-fab";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -100,6 +101,7 @@ export default async function LocaleLayout({
           whatsappLabel={dict.common.whatsapp}
           message={dict.form.title}
         />
+        <Analytics />
       </body>
     </html>
   );

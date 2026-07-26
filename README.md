@@ -1,36 +1,149 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ellotravel.net
 
-## Getting Started
+Website for **Ello Travel**, a travel agency in Klinë, Kosovo — flight tickets
+from Prishtina, hotels on the Albanian coast, and summer packages.
 
-First, run the development server:
+A statically generated, three-language marketing site. Enquiries arrive through
+a booking-request form, WhatsApp and phone, which is how the agency already
+sells.
+
+## Stack
+
+| | |
+|---|---|
+| Framework | Next.js 16 (App Router, React 19) |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 |
+| Rendering | Static generation — 116 prerendered pages |
+| Enquiries | React Server Action → Resend REST API |
+| Analytics | GA4 via `@next/third-parties` |
+
+Every page is prerendered at build time, including 69 flight-route pages
+(23 destinations × 3 languages) and 21 hotel pages. That is the point of the
+architecture: this business gets found through searches like *"bileta avioni
+Prishtinë Stuttgart"*, and each of those is a real server-rendered page with
+its own title, description, canonical and hreflang tags.
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000 → redirects to /sq
+npm run build      # production build
+npm start          # serve the production build
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Languages
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Albanian (`sq`, default), German (`de`), English (`en`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+German is not decoration — most of the flight routes serve the Albanian
+diaspora in Germany, Switzerland and Austria, who often search in German.
 
-## Learn More
+Locale is picked by `src/proxy.ts` from the `Accept-Language` header, then
+remembered in a cookie once the visitor uses the language switcher. Every path
+is prefixed: `/sq/hotels`, `/de/hotels`, `/en/hotels`.
 
-To learn more about Next.js, take a look at the following resources:
+**Translations live in `src/i18n/dictionaries/`.** Albanian is the source of
+truth: `sq.ts` defines the shape and `de.ts` / `en.ts` are type-checked against
+it. Add a key to `sq.ts` and TypeScript refuses to build until the other two
+have it, so no language can silently fall back to blank text.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Editing content
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+No CMS — content is typed data, edited in the repo and deployed. Adding a hotel
+or a destination automatically produces its pages, sitemap entries and internal
+links in all three languages.
 
-## Deploy on Vercel
+| What | Where |
+|---|---|
+| Phone, email, address, Instagram | `src/data/site.ts` |
+| Hotels | `src/data/hotels.ts` |
+| Flight destinations | `src/data/destinations.ts` |
+| Packages | `src/data/offers.ts` |
+| Interface text | `src/i18n/dictionaries/*.ts` |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Prices
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Every `priceFrom` is `null`, which makes the UI say *"ask for a price"* rather
+than show a number nobody has confirmed. Set a number (EUR) and the card
+switches to *"from €X"*, formatted per locale.
+
+### Photography
+
+The site ships with no photographs. Rather than grey boxes, each card renders a
+generated SVG landscape keyed to its theme (`coast`, `alpine`, `metropolis`, …)
+— see `src/components/scene.tsx`.
+
+For a real photo, drop the file in `public/images/` and add
+`image: "/images/royal-g.jpg"` to that hotel. It is then served through
+`next/image` and the generated art disappears. The agency's Instagram is the
+natural source.
+
+## Booking enquiries
+
+The form is a React Server Action (`src/app/[locale]/contact/actions.ts`), so
+it submits and validates **without JavaScript** — worth having on the mobile
+connections many visitors arrive on. Validation returns field names; the client
+renders the message in the visitor's language.
+
+Copy `.env.example` to `.env.local` and fill in the values. Without them the
+site still works: the enquiry validates, the visitor sees the success screen,
+and the payload goes to the server log rather than being dropped. Set them
+before launch so enquiries reach the inbox.
+
+Spam is handled with a honeypot field; there is no captcha.
+
+## Before this goes live
+
+1. **Verify the hotel copy.** Names, star ratings and cities came from the
+   Instagram posts and are accurate. The descriptions and amenity lists in
+   `src/data/hotels.ts` are placeholder copy written from the destination, not
+   from the agency's material. Each is marked with a warning comment.
+2. **Add real prices**, or confirm enquiry-only is intended.
+3. **Confirm the flight destinations** still run, and which are seasonal.
+   Münster and Osnabrück share one airport (FMO) and are listed separately on
+   purpose, because travellers search for both names.
+4. **Replace the logo.** `src/components/logo.tsx` is an interim mark built
+   from the brand's elements (orange heart, blue aircraft). Swap in the real
+   artwork.
+5. **Check the opening hours** in `dict.contact.hoursValue` — Mon–Sat
+   09:00–19:00 was assumed, not confirmed.
+6. **Confirm the office coordinates** in `site.geo`. They are the centre of
+   Klinë, not the exact address, and they feed the Google business panel.
+7. Point `ellotravel.net` at the deployment and submit
+   `https://www.ellotravel.net/sitemap.xml` to Google Search Console.
+
+## Deploying
+
+Vercel is the path of least resistance: import the repo, add the environment
+variables, deploy. No database and no external services are required at build
+time.
+
+Anything running Node works equally well — `npm run build && npm start`.
+
+Note that `NEXT_PUBLIC_GA_ID` is inlined at build time, so it must be set on
+the host *before* the production build runs.
+
+## SEO notes
+
+- `sitemap.xml` — 108 URLs with per-language alternates, generated from the
+  content files.
+- Canonical and `hreflang` on every page, including `x-default`. Bare language
+  codes (`de`, not `de-DE`) so the German pages are not narrowed to Germany.
+- `TravelAgency` structured data sitewide, `Hotel` on hotel pages,
+  `BreadcrumbList` on route pages.
+- Open Graph share cards generated per language at build time.
+
+## Project layout
+
+```
+src/
+  app/[locale]/          pages — home, hotels, flights, offers, about, contact
+  components/            header, footer, cards, form, generated scene art
+  data/                  hotels, destinations, offers, business details
+  i18n/                  locale config and the three dictionaries
+  lib/                   formatting, SEO helpers, enquiry validation/delivery
+  proxy.ts               locale detection and redirect
+```

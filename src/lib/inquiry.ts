@@ -9,6 +9,19 @@ export type InquiryField =
   | "email"
   | "consent";
 
+export type InquiryState = {
+  status: "idle" | "success" | "error";
+  /** Field names only — the client renders the translated message. */
+  errors: InquiryField[];
+};
+
+/**
+ * Lives here rather than beside the server action: a "use server" module may
+ * only export async functions, so exporting this object from there silently
+ * yields `undefined` on the client and crashes the first render.
+ */
+export const initialInquiryState: InquiryState = { status: "idle", errors: [] };
+
 export type Inquiry = {
   name: string;
   phone: string;

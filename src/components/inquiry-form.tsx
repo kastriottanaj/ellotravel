@@ -1,18 +1,19 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui";
 import { site, telHref } from "@/data/site";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 import { cx } from "@/lib/format";
-import { INQUIRY_SUBJECTS, type InquiryField } from "@/lib/inquiry";
 import {
   initialInquiryState,
-  submitInquiry,
+  INQUIRY_SUBJECTS,
+  type InquiryField,
   type InquiryState,
-} from "@/app/[locale]/contact/actions";
+} from "@/lib/inquiry";
+import { submitInquiry } from "@/app/[locale]/contact/actions";
 
 const FIELD =
   "w-full rounded-xl border border-ocean-200 bg-white px-4 py-2.5 text-sm text-ocean-950 placeholder:text-ocean-400 focus:border-ocean-500 focus:outline-2 focus:outline-offset-0 focus:outline-ocean-500/30";
@@ -61,31 +62,52 @@ function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: st
 export function InquiryForm({
   locale,
   dict,
-  presetSubject = "",
-  reference = "",
 }: {
   locale: Locale;
   dict: Dictionary;
-  /**
-   * Cards across the site link here with ?subject=hotel&ref=royal-g so the
-   * visitor doesn't have to re-explain what they were looking at. These are
-   * read on the server and passed down — reading them here with
-   * useSearchParams would push the whole form out of the server-rendered
-   * HTML, and with it the no-JavaScript fallback.
-   */
-  presetSubject?: string;
-  reference?: string;
 }) {
   const [state, formAction] = useActionState<InquiryState, FormData>(
     submitInquiry,
     initialInquiryState,
   );
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const defaultSubject = INQUIRY_SUBJECTS.includes(
-    presetSubject as (typeof INQUIRY_SUBJECTS)[number],
-  )
-    ? presetSubject
-    : "flight";
+  /**
+   * Hotel and route cards link here as ?subject=hotel&ref=royal-g so the
+   * visitor doesn't have to re-explain what they were just looking at.
+   *
+   * Read from the URL after mount, deliberately: `useSearchParams` would pull
+   * this form out of the prerendered HTML entirely, and reading searchParams
+   * on the server would turn the whole page into a dynamic hole. Both cost the
+   * no-JavaScript submit path, which matters more than the prefill — so the
+   * prefill is the part that degrades.
+   */
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const subject = params.get("subject");
+    const reference = params.get("ref");
+
+    if (
+      subject &&
+      INQUIRY_SUBJECTS.includes(subject as (typeof INQUIRY_SUBJECTS)[number])
+    ) {
+      const field = form.elements.namedItem("subject");
+      if (field instanceof HTMLSelectElement) field.value = subject;
+    }
+
+    if (reference) {
+      const hidden = form.elements.namedItem("reference");
+      if (hidden instanceof HTMLInputElement) hidden.value = reference;
+
+      const destination = form.elements.namedItem("destination");
+      if (destination instanceof HTMLInputElement && !destination.value) {
+        destination.value = reference.replace(/-/g, " ");
+      }
+    }
+  }, []);
 
   const messages: Record<InquiryField, string> = {
     name: dict.form.errName,
@@ -134,12 +156,13 @@ export function InquiryForm({
 
   return (
     <form
+      ref={formRef}
       action={formAction}
       noValidate
       className="rounded-2xl border border-ocean-100 bg-white p-6 shadow-card sm:p-8"
     >
       <input type="hidden" name="locale" value={locale} />
-      <input type="hidden" name="reference" value={reference} />
+      <input type="hidden" name="reference" defaultValue="" />
       {/* Honeypot — hidden from people, tempting to bots. */}
       <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
         <label htmlFor="company">Company</label>
@@ -207,7 +230,7 @@ export function InquiryForm({
           <select
             id="subject"
             name="subject"
-            defaultValue={defaultSubject}
+            defaultValue="flight"
             className={FIELD}
           >
             {INQUIRY_SUBJECTS.map((value) => (
@@ -224,7 +247,7 @@ export function InquiryForm({
               id="destination"
               name="destination"
               type="text"
-              defaultValue={reference ? reference.replace(/-/g, " ") : ""}
+              defaultValue=""
               placeholder={dict.form.destinationPlaceholder}
               className={FIELD}
             />

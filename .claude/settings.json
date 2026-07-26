@@ -14,9 +14,16 @@
       "Bash(pkill -f \"next-server\")",
       "Bash(pkill -f \"PORT=3210\")",
       "Bash(sed -i '' 's/\\\\${hubAirport\\\\.city}/${hubAirport.city[locale]}/g; s/{hubAirport\\\\.city}$/{hubAirport.city[locale]}/' \"src/app/[locale]/flights/[slug]/page.tsx\" && grep -n \"hubAirport.city\" \"src/app/[locale]/flights/[slug]/page.tsx\")",
+      "Bash(curl -s http://localhost:3210/sq/contact)",
+      "Bash(lsof -ti:3210)",
+      "Bash(node -e \"try{console.log\\('  resolved:', require.resolve\\('@next/third-parties/package.json'\\)\\)}catch\\(e\\){console.log\\('  NOT INSTALLED'\\)}\")",
+      "Bash(npm install *)",
+      "Bash(node -e \"try{require.resolve\\('@next/third-parties/package.json'\\);console.log\\('  installed OK'\\)}catch\\(e\\){console.log\\('  STILL MISSING'\\)}\")",
+      "Bash(npm ls *)",
       "Bash(gh auth *)",
-      "Bash(gh repo *)",
-      "Bash(git add *)"
+      "Bash(git config *)",
+      "Bash(git add *)",
+      "Bash(git check-ignore *)"
     ],
     "additionalDirectories": [
       "/Users/kastriot/Desktop/ellotravel/src/app",

@@ -6,16 +6,9 @@ import {
   INQUIRY_SUBJECTS,
   type Inquiry,
   type InquiryField,
+  type InquiryState,
   type InquirySubject,
 } from "@/lib/inquiry";
-
-export type InquiryState = {
-  status: "idle" | "success" | "error";
-  /** Field names only — the client renders the translated message. */
-  errors: InquiryField[];
-};
-
-export const initialInquiryState: InquiryState = { status: "idle", errors: [] };
 
 function text(formData: FormData, key: string) {
   const value = formData.get(key);

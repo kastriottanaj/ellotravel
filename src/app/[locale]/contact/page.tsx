@@ -6,20 +6,13 @@ import { getDictionary, resolveLocale } from "@/i18n";
 import { locales } from "@/i18n/config";
 import { alternatesFor } from "@/lib/seo";
 
-type PageProps = {
-  params: Promise<{ locale: string }>;
-  searchParams: Promise<{ subject?: string; ref?: string }>;
-};
+type PageProps = { params: Promise<{ locale: string }> };
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const locale = resolveLocale((await params).locale);
   const dict = getDictionary(locale);
 
@@ -30,10 +23,9 @@ export async function generateMetadata({
   };
 }
 
-export default async function ContactPage({ params, searchParams }: PageProps) {
+export default async function ContactPage({ params }: PageProps) {
   const locale = resolveLocale((await params).locale);
   const dict = getDictionary(locale);
-  const { subject = "", ref = "" } = await searchParams;
 
   const details = [
     {
@@ -75,12 +67,7 @@ export default async function ContactPage({ params, searchParams }: PageProps) {
 
       <div className="container-page grid gap-10 py-14 lg:grid-cols-5 lg:py-16">
         <div className="lg:col-span-3">
-          <InquiryForm
-            locale={locale}
-            dict={dict}
-            presetSubject={subject}
-            reference={ref}
-          />
+          <InquiryForm locale={locale} dict={dict} />
         </div>
 
         <aside className="lg:col-span-2">
