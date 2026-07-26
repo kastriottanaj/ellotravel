@@ -1,26 +1,86 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Brand — sampled from the Ello Travel logo: orange heart, blue aircraft. */
+  --color-sunset-50: #fff8f0;
+  --color-sunset-100: #ffecd6;
+  --color-sunset-200: #fed7ab;
+  --color-sunset-300: #fdba75;
+  --color-sunset-400: #fa9a42;
+  --color-sunset-500: #ee7c1b;
+  --color-sunset-600: #d4620f;
+  --color-sunset-700: #b04a0f;
+  --color-sunset-800: #8d3c13;
+  --color-sunset-900: #733313;
+
+  --color-ocean-50: #eff6fb;
+  --color-ocean-100: #d8e9f5;
+  --color-ocean-200: #b0d2ea;
+  --color-ocean-300: #7db4da;
+  --color-ocean-400: #4a92c5;
+  --color-ocean-500: #2775aa;
+  --color-ocean-600: #1b5c8c;
+  --color-ocean-700: #154a73;
+  --color-ocean-800: #123c5d;
+  --color-ocean-900: #0f3049;
+  --color-ocean-950: #091f30;
+
+  /* Warm neutral — keeps large white areas from feeling clinical. */
+  --color-sand-50: #fdfaf6;
+  --color-sand-100: #f7f1e8;
+  --color-sand-200: #ece2d4;
+
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-serif, Georgia, serif;
+
+  --shadow-card: 0 1px 2px rgb(15 48 73 / 0.06), 0 8px 24px -12px rgb(15 48 73 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(15 48 73 / 0.08), 0 18px 40px -18px rgb(15 48 73 / 0.3);
+
+  --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #ffffff;
+  color: var(--color-ocean-950);
+}
+
+/* Respect users who ask for less motion — several sections animate on entry. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 80rem;
+  padding-inline: clamp(1.25rem, 4vw, 2rem);
 }

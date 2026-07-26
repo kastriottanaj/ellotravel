@@ -3,7 +3,24 @@
     "allow": [
       "Bash(curl -sSI -L --max-time 15 https://www.ellotravel.net)",
       "Bash(npm -v)",
-      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack --use-npm --yes)"
+      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack --use-npm --yes)",
+      "Bash(npm audit *)",
+      "Bash(rm -f src/app/page.tsx src/app/layout.tsx public/next.svg public/vercel.svg public/file.svg public/globe.svg public/window.svg && mkdir -p \"src/app/[locale]\" src/components src/lib && ls -R src public)",
+      "Bash(npm run *)",
+      "Bash(PORT=3210 npm start)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"=== TSC exit: $? ===\")",
+      "Bash(kill %1)",
+      "Bash(pkill -f \"next-server\")",
+      "Bash(pkill -f \"PORT=3210\")",
+      "Bash(sed -i '' 's/\\\\${hubAirport\\\\.city}/${hubAirport.city[locale]}/g; s/{hubAirport\\\\.city}$/{hubAirport.city[locale]}/' \"src/app/[locale]/flights/[slug]/page.tsx\" && grep -n \"hubAirport.city\" \"src/app/[locale]/flights/[slug]/page.tsx\")",
+      "Bash(gh auth *)",
+      "Bash(gh repo *)",
+      "Bash(git add *)"
+    ],
+    "additionalDirectories": [
+      "/Users/kastriot/Desktop/ellotravel/src/app",
+      "/Users/kastriot/Desktop/ellotravel/src/app/[locale]/flights/[slug]"
     ]
   }
 }
