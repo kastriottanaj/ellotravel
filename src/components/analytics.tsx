@@ -90,8 +90,8 @@ export function AnalyticsConsent({
     const wasAccepted = consent === "accepted";
     if (wasAccepted) {
       queueConsent("denied");
-      removeAnalyticsCookies();
     }
+    removeAnalyticsCookies();
 
     localStorage.setItem(STORAGE_KEY, "rejected");
     setConsent("rejected");
