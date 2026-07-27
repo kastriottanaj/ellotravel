@@ -41,9 +41,61 @@ Albanian (`sq`, default), German (`de`), English (`en`).
 German is not decoration — most of the flight routes serve the Albanian
 diaspora in Germany, Switzerland and Austria, who often search in German.
 
-Locale is picked by `src/proxy.ts` from the `Accept-Language` header, then
-remembered in a cookie once the visitor uses the language switcher. Every path
-is prefixed: `/sq/hotels`, `/de/hotels`, `/en/hotels`.
+Every path is prefixed: `/sq/hotels`, `/de/hotels`, `/en/hotels`. A request
+without a prefix is redirected by `src/proxy.ts`, which picks the language in
+this order — the first rule that answers wins:
+
+| | Signal | |
+|---|---|---|
+| 1 | `ello_locale` cookie | the visitor used the language switcher; nothing overrules that |
+| 2 | `Accept-Language`, top choice | their own setting, when it is a language we publish |
+| 3 | Country | `XK` `AL` `MK` `ME` → Albanian · `DE` `AT` `CH` → German · anywhere else → English |
+| 4 | `Accept-Language`, any choice | a language further down the list |
+| 5 | Albanian | nothing to go on at all |
+
+Language outranks location on purpose: an Albanian phone in Zurich gets
+Albanian, because a device set to Albanian is a clearer statement than a Swiss
+IP address. Location answers the case the header cannot — a Turkish phone in
+Prishtina would settle for the English in its `Accept-Language`, and gets
+Albanian instead.
+
+The country map lives in `src/i18n/detect.ts` and lists only the exceptions.
+
+### Where the country comes from
+
+Next.js removed `request.geo` in v15, so the country has to arrive as a request
+header. `src/i18n/detect.ts` reads `X-Country-Code`, then `CF-IPCountry`, then
+`X-Vercel-IP-Country`, so the same code works behind nginx, Cloudflare or
+Vercel without a change.
+
+**These are ordinary request headers and a visitor can send any value they
+like.** That is harmless for choosing a language — never use them for anything
+where being wrong costs something.
+
+In production nginx sets `X-Country-Code` from a local MaxMind database:
+
+```nginx
+# nginx.conf, http block — apt install libnginx-mod-http-geoip2
+geoip2 /usr/share/GeoIP/GeoLite2-Country.mmdb {
+  $geoip2_country_code source=$remote_addr country iso_code;
+}
+
+# sites-enabled/ellotravel, inside location /
+proxy_set_header X-Country-Code $geoip2_country_code;
+```
+
+The variable is empty for addresses the database cannot place; `detect.ts`
+treats that, `XX` and Tor's `T1` as "no country" and moves on. Keep the `.mmdb`
+current with `geoipupdate` on a monthly cron — a stale database misroutes
+quietly, with nothing in the logs to show for it.
+
+Until that nginx change is deployed, the country falls back to the region
+subtag the browser already sends (`de-CH` → `CH`). That reflects where the
+phone was set up rather than where it is, which is why it is only the fallback.
+
+Nothing here affects crawlers reaching a specific language: only unprefixed
+paths redirect, every locale URL stays directly reachable, and each page still
+carries its own canonical and `hreflang` alternates.
 
 **Translations live in `src/i18n/dictionaries/`.** Albanian is the source of
 truth: `sq.ts` defines the shape and `de.ts` / `en.ts` are type-checked against
@@ -143,7 +195,7 @@ src/
   app/[locale]/          pages — home, hotels, flights, offers, about, contact
   components/            header, footer, cards, form, generated scene art
   data/                  hotels, destinations, offers, business details
-  i18n/                  locale config and the three dictionaries
+  i18n/                  locale config, language/country detection, dictionaries
   lib/                   formatting, SEO helpers, enquiry validation/delivery
-  proxy.ts               locale detection and redirect
+  proxy.ts               locale redirect for unprefixed paths
 ```
