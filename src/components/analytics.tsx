@@ -117,7 +117,7 @@ export function AnalyticsConsent({
         >
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-xl">
-              <h2 className="font-display text-xl font-semibold text-ocean-950">
+              <h2 className="text-xl font-bold text-ocean-950">
                 {copy.title}
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-ocean-700">

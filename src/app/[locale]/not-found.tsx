@@ -13,10 +13,14 @@ export default function LocaleNotFound() {
 
   return (
     <div className="container-page flex min-h-[50vh] flex-col items-center justify-center py-20 text-center">
-      <p className="font-display text-6xl font-semibold text-ocean-200">404</p>
-      <h1 className="mt-4 font-display text-3xl font-semibold text-ocean-950">
+      <p className="text-6xl font-bold text-ocean-200">404</p>
+      <h1 className="mt-4 text-3xl font-bold tracking-tight text-ocean-950">
         {dict.notFound.title}
       </h1>
+      <span
+        aria-hidden="true"
+        className="mt-4 block h-1 w-14 rounded-full bg-sunset-500"
+      />
       <p className="mt-3 max-w-md text-base text-ocean-700 text-pretty">
         {dict.notFound.body}
       </p>

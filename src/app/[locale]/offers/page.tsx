@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { OfferCard } from "@/components/cards";
+import { IconArrowRight } from "@/components/icons";
 import { PageHero } from "@/components/page-hero";
+import { TrustBar } from "@/components/trust-bar";
 import { ButtonLink } from "@/components/ui";
 import { offers } from "@/data/offers";
+import { whatsappHref } from "@/data/site";
 import { getDictionary, resolveLocale } from "@/i18n";
 import { locales } from "@/i18n/config";
 import { alternatesFor } from "@/lib/seo";
@@ -35,7 +38,26 @@ export default async function OffersPage({ params }: PageProps) {
         title={dict.offers.title}
         description={dict.offers.subtitle}
         theme="sunset"
+        actions={
+          <>
+            <ButtonLink href={`/${locale}/contact?subject=package`} size="lg">
+              {dict.common.bookNow}
+              <IconArrowRight className="h-4 w-4" />
+            </ButtonLink>
+            <ButtonLink
+              href={whatsappHref(dict.form.title)}
+              variant="onDark"
+              size="lg"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {dict.common.whatsapp}
+            </ButtonLink>
+          </>
+        }
       />
+
+      <TrustBar locale={locale} dict={dict} overlap />
 
       <div className="container-page py-16">
         {offers.length === 0 ? (
@@ -49,7 +71,7 @@ export default async function OffersPage({ params }: PageProps) {
         )}
 
         <div className="mt-14 rounded-2xl bg-sand-50 p-8 text-center ring-1 ring-sand-200 sm:p-12">
-          <h2 className="font-display text-2xl font-semibold text-ocean-950 text-balance sm:text-3xl">
+          <h2 className="text-2xl font-bold tracking-tight text-ocean-950 text-balance sm:text-3xl">
             {dict.home.ctaTitle}
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-ocean-700 text-pretty">
@@ -58,6 +80,7 @@ export default async function OffersPage({ params }: PageProps) {
           <div className="mt-7">
             <ButtonLink href={`/${locale}/contact?subject=package`} size="lg">
               {dict.common.bookNow}
+              <IconArrowRight className="h-4 w-4" />
             </ButtonLink>
           </div>
         </div>

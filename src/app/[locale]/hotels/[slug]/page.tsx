@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HotelCard } from "@/components/cards";
 import { SceneCover } from "@/components/scene";
-import { ButtonLink, Stars } from "@/components/ui";
+import { IconPin } from "@/components/icons";
+import { ButtonLink, SectionHeading, Stars } from "@/components/ui";
 import {
   amenityCatalog,
   cities,
@@ -106,13 +107,11 @@ export default async function HotelPage({ params }: PageProps) {
                   count={hotel.stars}
                   label={`${hotel.stars} ${dict.common.stars}`}
                 />
-                <h1 className="mt-1.5 font-display text-3xl font-semibold tracking-tight text-ocean-950 sm:text-4xl">
+                <h1 className="mt-1.5 text-3xl font-bold tracking-tight text-ocean-950 sm:text-4xl">
                   {hotel.name}
                 </h1>
                 <p className="mt-1.5 flex items-center gap-1.5 text-ocean-700">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-sunset-500">
-                    <path d="M12 21s-7-5.3-7-10a7 7 0 1 1 14 0c0 4.7-7 10-7 10Zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                  </svg>
+                  <IconPin className="h-4 w-4 text-sunset-500" />
                   {city.name[locale]}, {city.country[locale]}
                 </p>
               </div>
@@ -121,7 +120,7 @@ export default async function HotelPage({ params }: PageProps) {
                 {hotel.priceFrom !== null ? (
                   <p className="text-ocean-600">
                     {dict.common.from}{" "}
-                    <span className="font-display text-2xl font-semibold text-ocean-950">
+                    <span className="text-2xl font-bold text-ocean-950">
                       {formatPrice(hotel.priceFrom, locale)}
                     </span>{" "}
                     <span className="text-sm">{dict.common.perNight}</span>
@@ -154,14 +153,12 @@ export default async function HotelPage({ params }: PageProps) {
 
       <div className="container-page grid gap-10 py-14 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <h2 className="font-display text-2xl font-semibold text-ocean-950">
-            {dict.hotels.aboutHotel}
-          </h2>
-          <p className="mt-4 text-base leading-relaxed text-ocean-700">
+          <SectionHeading id="about-hotel" title={dict.hotels.aboutHotel} />
+          <p className="mt-6 text-base leading-relaxed text-ocean-700">
             {hotel.description[locale]}
           </p>
 
-          <h3 className="mt-10 font-display text-xl font-semibold text-ocean-950">
+          <h3 className="mt-10 text-xl font-bold text-ocean-950">
             {dict.hotels.amenities}
           </h3>
           <ul className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-2">
@@ -181,7 +178,7 @@ export default async function HotelPage({ params }: PageProps) {
 
         <aside className="lg:col-span-1">
           <div className="sticky top-28 rounded-2xl bg-sand-50 p-6 ring-1 ring-sand-200">
-            <h2 className="font-display text-lg font-semibold text-ocean-950">
+            <h2 className="text-lg font-bold text-ocean-950">
               {dict.hotels.location}
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-ocean-700">
@@ -207,11 +204,9 @@ export default async function HotelPage({ params }: PageProps) {
         </aside>
       </div>
 
-      <section className="bg-sand-50 py-16">
+      <section aria-labelledby="other-hotels" className="bg-sand-50 py-16">
         <div className="container-page">
-          <h2 className="font-display text-2xl font-semibold text-ocean-950">
-            {dict.hotels.otherHotels}
-          </h2>
+          <SectionHeading id="other-hotels" title={dict.hotels.otherHotels} />
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {others.map((item) => (
               <HotelCard key={item.slug} hotel={item} locale={locale} dict={dict} />

@@ -145,7 +145,7 @@ export function InquiryForm({
             <path d="M9.6 16.2 5.4 12l-1.4 1.4 5.6 5.6L20.8 7.8l-1.4-1.4z" />
           </svg>
         </span>
-        <h2 className="mt-5 font-display text-2xl font-semibold text-ocean-950">
+        <h2 className="mt-5 text-2xl font-bold text-ocean-950">
           {dict.form.successTitle}
         </h2>
         <p className="mx-auto mt-2.5 max-w-sm text-sm leading-relaxed text-ocean-700">
@@ -181,7 +181,7 @@ export function InquiryForm({
         <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <h2 className="font-display text-xl font-semibold text-ocean-950">
+      <h2 className="text-xl font-bold text-ocean-950">
         {dict.form.title}
       </h2>
       <p className="mt-1.5 text-sm text-ocean-700">{dict.form.subtitle}</p>

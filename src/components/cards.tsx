@@ -68,7 +68,7 @@ export function HotelCard({
               label={`${hotel.stars} ${dict.common.stars}`}
               className="mb-1.5"
             />
-            <h3 className="font-display text-xl font-semibold text-white drop-shadow-sm">
+            <h3 className="text-xl font-bold text-white drop-shadow-sm">
               {hotel.name}
             </h3>
             <p className="text-sm text-white/85">{city.name[locale]}</p>
@@ -151,7 +151,7 @@ export function DestinationCard({
               <p className="text-xs font-medium uppercase tracking-[0.16em] text-white/80">
                 {hubAirport.city[locale]} →
               </p>
-              <h3 className="font-display text-xl font-semibold text-white drop-shadow-sm">
+              <h3 className="text-xl font-bold text-white drop-shadow-sm">
                 {city}
               </h3>
             </div>
@@ -230,7 +230,7 @@ export function OfferCard({
         )}
       </div>
       <div className="flex flex-1 flex-col gap-3 p-5">
-        <h3 className="font-display text-xl font-semibold text-ocean-950">
+        <h3 className="text-xl font-bold text-ocean-950">
           {offer.title[locale]}
         </h3>
         <p className="text-sm leading-relaxed text-ocean-700">

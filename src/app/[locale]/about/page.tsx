@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { IconBriefcase, IconPin, IconPlane } from "@/components/icons";
 import { PageHero } from "@/components/page-hero";
+import { TrustBar } from "@/components/trust-bar";
 import { ButtonLink } from "@/components/ui";
 import { destinations } from "@/data/destinations";
 import { hotels } from "@/data/hotels";
@@ -30,9 +32,17 @@ export default async function AboutPage({ params }: PageProps) {
   const dict = getDictionary(locale);
 
   const stats = [
-    { value: `${destinations.length}+`, label: dict.about.statsRoutes },
-    { value: String(hotels.length), label: dict.about.statsHotels },
-    { value: site.address.city, label: dict.about.statsBase },
+    {
+      icon: IconPlane,
+      value: `${destinations.length}+`,
+      label: dict.about.statsRoutes,
+    },
+    {
+      icon: IconBriefcase,
+      value: String(hotels.length),
+      label: dict.about.statsHotels,
+    },
+    { icon: IconPin, value: site.address.city, label: dict.about.statsBase },
   ];
 
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -48,6 +58,8 @@ export default async function AboutPage({ params }: PageProps) {
         theme="alpine"
       />
 
+      <TrustBar locale={locale} dict={dict} overlap />
+
       <div className="container-page grid gap-12 py-16 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <p className="text-lg leading-relaxed text-ocean-800 text-pretty">
@@ -61,12 +73,15 @@ export default async function AboutPage({ params }: PageProps) {
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-2xl bg-sand-50 p-5 ring-1 ring-sand-200"
+                className="rounded-2xl bg-white p-5 shadow-card ring-1 ring-ocean-100"
               >
-                <dt className="font-display text-3xl font-semibold text-ocean-950">
+                <dt className="flex items-center gap-2.5 text-3xl font-bold text-ocean-950">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ocean-50 text-ocean-600">
+                    <stat.icon className="h-5 w-5" />
+                  </span>
                   {stat.value}
                 </dt>
-                <dd className="mt-1 text-sm text-ocean-700">{stat.label}</dd>
+                <dd className="mt-2 text-sm text-ocean-700">{stat.label}</dd>
               </div>
             ))}
           </dl>
@@ -74,7 +89,7 @@ export default async function AboutPage({ params }: PageProps) {
 
         <aside>
           <div className="rounded-2xl bg-ocean-900 p-6 text-white sm:p-8">
-            <h2 className="font-display text-xl font-semibold">
+            <h2 className="text-xl font-bold">
               {dict.about.visitTitle}
             </h2>
             <address className="mt-4 text-sm not-italic leading-relaxed text-ocean-100">

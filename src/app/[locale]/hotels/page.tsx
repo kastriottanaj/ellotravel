@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { HotelCard } from "@/components/cards";
+import { IconArrowRight } from "@/components/icons";
 import { PageHero } from "@/components/page-hero";
-import { cities, hotelsByCity, type CitySlug } from "@/data/hotels";
+import { TrustBar } from "@/components/trust-bar";
+import { ButtonLink, SectionHeading } from "@/components/ui";
+import { cities, hotels, hotelsByCity, type CitySlug } from "@/data/hotels";
+import { whatsappHref } from "@/data/site";
 import { getDictionary, resolveLocale } from "@/i18n";
 import { locales } from "@/i18n/config";
 import { alternatesFor } from "@/lib/seo";
@@ -31,11 +35,30 @@ export default async function HotelsPage({ params }: PageProps) {
   return (
     <>
       <PageHero
-        kicker={dict.nav.hotels}
+        kicker={`${dict.nav.hotels} — ${hotels.length}`}
         title={dict.hotels.title}
         description={dict.hotels.subtitle}
         theme="riviera"
+        actions={
+          <>
+            <ButtonLink href={`/${locale}/contact?subject=hotel`} size="lg">
+              {dict.common.bookNow}
+              <IconArrowRight className="h-4 w-4" />
+            </ButtonLink>
+            <ButtonLink
+              href={whatsappHref(dict.form.title)}
+              variant="onDark"
+              size="lg"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {dict.common.whatsapp}
+            </ButtonLink>
+          </>
+        }
       />
+
+      <TrustBar locale={locale} dict={dict} overlap />
 
       <div className="container-page space-y-16 py-16">
         {citySlugs.map((slug) => {
@@ -44,17 +67,11 @@ export default async function HotelsPage({ params }: PageProps) {
 
           return (
             <section key={slug} aria-labelledby={`city-${slug}`}>
-              <div className="max-w-2xl">
-                <h2
-                  id={`city-${slug}`}
-                  className="font-display text-2xl font-semibold text-ocean-950 sm:text-3xl"
-                >
-                  {city.name[locale]}
-                </h2>
-                <p className="mt-2 text-base leading-relaxed text-ocean-700">
-                  {city.blurb[locale]}
-                </p>
-              </div>
+              <SectionHeading
+                id={`city-${slug}`}
+                title={city.name[locale]}
+                description={city.blurb[locale]}
+              />
 
               {list.length === 0 ? (
                 <p className="mt-6 text-sm text-ocean-600">{dict.hotels.empty}</p>
