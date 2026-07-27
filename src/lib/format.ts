@@ -19,6 +19,14 @@ export function formatPrice(value: number, locale: Locale): string {
   }).format(value);
 }
 
+/** One-decimal score in the reader's locale: 4.9 renders as "4,9" in sq and de. */
+export function formatRating(value: number, locale: Locale): string {
+  return new Intl.NumberFormat(localeMeta[locale].intl, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
 /** Joins class names, dropping falsy values. */
 export function cx(...values: Array<string | false | null | undefined>): string {
   return values.filter(Boolean).join(" ");

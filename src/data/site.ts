@@ -32,6 +32,27 @@ export const site = {
 } as const;
 
 /**
+ * ⚠️ Google Business rating shown on the home page trust bar. These are public
+ * claims about the agency — keep them in step with the live Google profile.
+ */
+export const googleReviews = { rating: 4.9, count: 250 } as const;
+
+/**
+ * Hero photograph. Save the file in /public and point at it here; the hero
+ * keeps its generated artwork underneath, so a missing file degrades to the
+ * illustrated sky rather than to a broken image.
+ */
+export const heroImage: string | null = "/hero-flight.jpg";
+
+/**
+ * Whole years of trading, for the hero stat strip. The home page is static, so
+ * this is fixed at build time — it moves on with the next deploy of the year.
+ */
+export function yearsTrading(): number {
+  return new Date().getFullYear() - site.founded;
+}
+
+/**
  * The departure hub every flight page is built around. Localised because the
  * city reads as "Prishtinë" to an Albanian speaker but "Pristina" in German
  * and English — and these strings appear in page titles and breadcrumbs.

@@ -171,6 +171,45 @@ export function DestinationCard({
   );
 }
 
+/**
+ * Poster-style tile for the "most requested" strip: the whole card is one link
+ * into the enquiry form, prefilled with the package the visitor tapped.
+ */
+export function OfferTile({
+  offer,
+  locale,
+  dict,
+}: {
+  offer: Offer;
+  locale: Locale;
+  dict: Dictionary;
+}) {
+  return (
+    <Link
+      href={`/${locale}/contact?subject=package&ref=${offer.slug}`}
+      className="group relative isolate block aspect-[4/5] overflow-hidden rounded-2xl shadow-card ring-1 ring-ocean-950/5 transition duration-300 hover:-translate-y-1 hover:shadow-lift focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-600"
+    >
+      <SceneCover
+        theme={offer.scene}
+        image={offer.image}
+        alt={offer.title[locale]}
+        scrim="top"
+        className="h-full w-full transition duration-500 group-hover:scale-[1.04]"
+      />
+      <div className="absolute inset-x-0 top-0 p-4 sm:p-5">
+        <h3 className="text-lg font-bold leading-tight text-white drop-shadow-sm">
+          {offer.title[locale]}
+        </h3>
+        {offer.nights && (
+          <p className="mt-1 text-sm text-white/85">
+            {offer.nights} {dict.common.nights}
+          </p>
+        )}
+      </div>
+    </Link>
+  );
+}
+
 export function OfferCard({
   offer,
   locale,

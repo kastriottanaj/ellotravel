@@ -98,14 +98,18 @@ export function SectionHeading({
   );
 }
 
+const STAR_SIZES = { sm: "h-3.5 w-3.5", md: "h-[1.05rem] w-[1.05rem]" } as const;
+
 export function Stars({
   count,
   label,
   className,
+  size = "sm",
 }: {
   count: number;
   label: string;
   className?: string;
+  size?: keyof typeof STAR_SIZES;
 }) {
   return (
     <span className={cx("inline-flex items-center gap-0.5", className)} title={label}>
@@ -115,7 +119,7 @@ export function Stars({
           key={index}
           viewBox="0 0 20 20"
           aria-hidden="true"
-          className="h-3.5 w-3.5 fill-sunset-400"
+          className={cx("fill-sunset-400", STAR_SIZES[size])}
         >
           <path d="M10 1.6l2.47 5.2 5.53.78-4 4.03.95 5.79L10 14.66 5.05 17.4l.95-5.79-4-4.03 5.53-.78L10 1.6Z" />
         </svg>

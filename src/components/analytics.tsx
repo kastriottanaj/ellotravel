@@ -111,7 +111,9 @@ export function AnalyticsConsent({
       {showBanner ? (
         <section
           aria-label={copy.title}
-          className="fixed inset-x-3 bottom-3 z-[100] mx-auto max-w-3xl rounded-2xl border border-ocean-100 bg-white p-5 shadow-lift sm:bottom-5 sm:p-6"
+          // Clears the sticky mobile call/book bar, which owns the bottom edge
+          // of the screen below the lg breakpoint.
+          className="fixed inset-x-3 bottom-[5.25rem] z-[100] mx-auto max-w-3xl rounded-2xl border border-ocean-100 bg-white p-5 shadow-lift sm:p-6 lg:bottom-5"
         >
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-xl">
@@ -136,7 +138,7 @@ export function AnalyticsConsent({
         <button
           type="button"
           onClick={() => setSettingsOpen(true)}
-          className="fixed bottom-3 left-3 z-[90] rounded-full border border-ocean-200 bg-white px-3 py-2 text-xs font-semibold text-ocean-700 shadow-card transition hover:border-ocean-300 hover:text-ocean-950 sm:bottom-5 sm:left-5"
+          className="fixed bottom-[5.25rem] left-3 z-[90] rounded-full border border-ocean-200 bg-white px-3 py-2 text-xs font-semibold text-ocean-700 shadow-card transition hover:border-ocean-300 hover:text-ocean-950 lg:bottom-5 lg:left-5"
         >
           {copy.settings}
         </button>

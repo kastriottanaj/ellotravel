@@ -157,17 +157,28 @@ export function Scene({
   );
 }
 
-/** Scene plus a bottom scrim, so white text stays legible over any theme. */
+/**
+ * Where the darkening sits — put it on the same edge as the caption, so white
+ * text stays legible over any theme.
+ */
+const SCRIMS = {
+  bottom: "bg-gradient-to-t from-ocean-950/70 via-ocean-950/10 to-transparent",
+  top: "bg-gradient-to-b from-ocean-950/75 via-ocean-950/15 to-transparent",
+} as const;
+
+/** Scene plus a scrim, so white text stays legible over any theme. */
 export function SceneCover({
   theme,
   image,
   alt,
   className,
+  scrim = "bottom",
 }: {
   theme: SceneTheme;
   image?: string;
   alt?: string;
   className?: string;
+  scrim?: keyof typeof SCRIMS;
 }) {
   return (
     <div className={cx("relative overflow-hidden bg-ocean-100", className)}>
@@ -184,7 +195,7 @@ export function SceneCover({
       ) : (
         <Scene theme={theme} rounded={false} />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-ocean-950/70 via-ocean-950/10 to-transparent" />
+      <div className={cx("absolute inset-0", SCRIMS[scrim])} />
     </div>
   );
 }
