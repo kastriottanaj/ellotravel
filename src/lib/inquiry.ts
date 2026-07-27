@@ -9,10 +9,49 @@ export type InquiryField =
   | "email"
   | "consent";
 
+/**
+ * Everything the visitor typed, echoed back by the action so a rejected
+ * submit re-renders a filled form. Without JavaScript the browser posts and
+ * replaces the whole page, so nothing survives in the DOM — this state is the
+ * only route the answers have back. Strings and one boolean, to stay
+ * serialisable across the action boundary.
+ */
+export type InquiryValues = {
+  name: string;
+  phone: string;
+  email: string;
+  subject: string;
+  destination: string;
+  departDate: string;
+  returnDate: string;
+  adults: string;
+  children: string;
+  message: string;
+  reference: string;
+  consent: boolean;
+};
+
+/** Doubles as the form's field defaults, via the initial state below. */
+export const emptyInquiryValues: InquiryValues = {
+  name: "",
+  phone: "",
+  email: "",
+  subject: "flight",
+  destination: "",
+  departDate: "",
+  returnDate: "",
+  adults: "2",
+  children: "0",
+  message: "",
+  reference: "",
+  consent: false,
+};
+
 export type InquiryState = {
   status: "idle" | "success" | "error";
   /** Field names only — the client renders the translated message. */
   errors: InquiryField[];
+  values: InquiryValues;
 };
 
 /**
@@ -20,7 +59,11 @@ export type InquiryState = {
  * only export async functions, so exporting this object from there silently
  * yields `undefined` on the client and crashes the first render.
  */
-export const initialInquiryState: InquiryState = { status: "idle", errors: [] };
+export const initialInquiryState: InquiryState = {
+  status: "idle",
+  errors: [],
+  values: emptyInquiryValues,
+};
 
 export type Inquiry = {
   name: string;

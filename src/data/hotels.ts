@@ -29,10 +29,18 @@ export const amenityCatalog = {
 
 export type AmenityKey = keyof typeof amenityCatalog;
 
+/**
+ * Every hotel we book sits on the Albanian coast, so the country name is one
+ * shared value — but it still has to be localised, or German and English
+ * visitors read the Albanian spelling on the hotel pages.
+ */
+const albania: LocalizedText = { sq: "Shqipëri", de: "Albanien", en: "Albania" };
+
 export const cities = {
   durres: {
     slug: "durres",
     name: { sq: "Durrës", de: "Durrës", en: "Durrës" } satisfies LocalizedText,
+    country: albania,
     blurb: {
       sq: "Bregdeti më i afërt me Kosovën — plazhe të gjata me rërë dhe jetë e gjallë deri vonë.",
       de: "Die Adriaküste, die dem Kosovo am nächsten liegt — lange Sandstrände und lebhaftes Nachtleben.",
@@ -42,6 +50,7 @@ export const cities = {
   shengjin: {
     slug: "shengjin",
     name: { sq: "Shëngjin", de: "Shëngjin", en: "Shëngjin" } satisfies LocalizedText,
+    country: albania,
     blurb: {
       sq: "Gjiri i qetë në veri të Shqipërisë, i preferuar nga familjet për ujin e cekët dhe promenadën.",
       de: "Die ruhige Bucht im Norden Albaniens, bei Familien beliebt für flaches Wasser und die Promenade.",

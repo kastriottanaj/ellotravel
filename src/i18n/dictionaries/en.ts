@@ -3,6 +3,7 @@ import type { Dictionary } from "../types";
 const en: Dictionary = {
   nav: {
     home: "Home",
+    skipToContent: "Skip to content",
     hotels: "Hotels",
     flights: "Flights",
     offers: "Offers",

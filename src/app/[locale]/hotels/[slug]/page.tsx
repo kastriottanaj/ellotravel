@@ -113,7 +113,7 @@ export default async function HotelPage({ params }: PageProps) {
                   <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-sunset-500">
                     <path d="M12 21s-7-5.3-7-10a7 7 0 1 1 14 0c0 4.7-7 10-7 10Zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
                   </svg>
-                  {city.name[locale]}, Shqipëri
+                  {city.name[locale]}, {city.country[locale]}
                 </p>
               </div>
 

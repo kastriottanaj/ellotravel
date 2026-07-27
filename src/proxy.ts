@@ -48,7 +48,13 @@ export function proxy(request: NextRequest) {
 
   const url = request.nextUrl.clone();
   url.pathname = `/${locale}${pathname === "/" ? "" : pathname}`;
-  return NextResponse.redirect(url);
+
+  const response = NextResponse.redirect(url);
+  // Which language this redirect picks depends on the header and the cookie
+  // read above. A 307 is not cacheable by default, but a CDN told to cache
+  // redirects would otherwise pin one visitor's language for everyone.
+  response.headers.set("Vary", "Accept-Language, Cookie");
+  return response;
 }
 
 export const config = {

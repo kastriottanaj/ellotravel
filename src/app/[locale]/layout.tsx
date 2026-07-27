@@ -3,6 +3,7 @@ import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "../globals.css";
 import { AnalyticsConsent } from "@/components/analytics";
 import { ContactFab } from "@/components/contact-fab";
+import { MobileCtaBar } from "@/components/mobile-cta-bar";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { AgencyJsonLd } from "@/components/structured-data";
@@ -77,13 +78,15 @@ export default async function LocaleLayout({
       lang={locale}
       className={`${bodyFont.variable} ${displayFont.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col font-sans">
+      {/* The bottom padding is the height of the sticky mobile CTA bar, so it
+          never covers the last line of the footer. */}
+      <body className="flex min-h-full flex-col pb-[4.75rem] font-sans lg:pb-0">
         <AgencyJsonLd locale={locale} />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-ocean-900 focus:px-4 focus:py-2 focus:text-sm focus:text-white"
         >
-          {dict.nav.home}
+          {dict.nav.skipToContent}
         </a>
         <SiteHeader
           locale={locale}
@@ -96,8 +99,12 @@ export default async function LocaleLayout({
           {children}
         </main>
         <SiteFooter locale={locale} dict={dict} />
-        <ContactFab
+        <MobileCtaBar
+          locale={locale}
+          bookLabel={dict.common.bookNow}
           callLabel={dict.common.callUs}
+        />
+        <ContactFab
           whatsappLabel={dict.common.whatsapp}
           message={dict.form.title}
         />

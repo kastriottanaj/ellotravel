@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { IconPhone, IconPin } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { ButtonLink } from "@/components/ui";
 import { locales, localeMeta, type Locale } from "@/i18n/config";
@@ -12,15 +13,38 @@ import type { NavItem } from "@/lib/nav";
 
 const LOCALE_COOKIE = "ello_locale";
 
-function swapLocale(pathname: string, next: Locale) {
+/** Back/forward moves the query without a re-render of its own. */
+function subscribeToHistory(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  return () => window.removeEventListener("popstate", onChange);
+}
+
+function swapLocale(pathname: string, next: Locale, search: string) {
   const segments = pathname.split("/");
   // segments[0] is "" because pathname always starts with "/"
   segments[1] = next;
-  return segments.join("/") || `/${next}`;
+  return `${segments.join("/") || `/${next}`}${search}`;
 }
 
 function LanguageSwitcher({ locale }: { locale: Locale }) {
   const pathname = usePathname();
+
+  /**
+   * Carry ?subject=…&ref=… through a language switch, so someone who picked a
+   * hotel and then changed language still lands on a prefilled enquiry form.
+   *
+   * Read from `window` rather than `useSearchParams`, which would pull this
+   * component — and with it every page, since the header sits in the layout —
+   * out of the prerendered HTML. The server snapshot is empty, so prerendered
+   * links carry no query and hydration stays quiet; the real value arrives
+   * once mounted. `usePathname` above re-renders us on route changes, which
+   * is when the snapshot is re-read.
+   */
+  const search = useSyncExternalStore(
+    subscribeToHistory,
+    () => window.location.search,
+    () => "",
+  );
 
   return (
     <div className="flex items-center gap-0.5 rounded-full bg-ocean-50 p-0.5">
@@ -29,7 +53,7 @@ function LanguageSwitcher({ locale }: { locale: Locale }) {
         return (
           <Link
             key={code}
-            href={swapLocale(pathname, code)}
+            href={swapLocale(pathname, code, search)}
             hrefLang={code}
             aria-current={active ? "true" : undefined}
             // Remember the choice so the middleware stops guessing from headers.
@@ -88,7 +112,10 @@ export function SiteHeader({
     <header className="sticky top-0 z-50 border-b border-ocean-100 bg-white/85 backdrop-blur-md">
       <div className="hidden bg-ocean-900 text-white lg:block">
         <div className="container-page flex h-9 items-center justify-between text-xs">
-          <p className="text-ocean-100">{site.address.street}, {site.address.city}</p>
+          <p className="flex items-center gap-1.5 text-ocean-100">
+            <IconPin className="h-3.5 w-3.5 shrink-0" />
+            {site.address.street}, {site.address.city}
+          </p>
           <div className="flex items-center gap-5">
             <a className="hover:text-sunset-300" href={`mailto:${site.email}`}>
               {site.email}
@@ -96,9 +123,10 @@ export function SiteHeader({
             {site.phones.map((phone, index) => (
               <a
                 key={phone.e164}
-                className="font-semibold hover:text-sunset-300"
+                className="flex items-center gap-1.5 font-semibold hover:text-sunset-300"
                 href={telHref(index)}
               >
+                <IconPhone className="h-3.5 w-3.5 shrink-0" />
                 {phone.display}
               </a>
             ))}
@@ -140,7 +168,11 @@ export function SiteHeader({
           <ButtonLink
             href={`/${locale}/contact`}
             size="sm"
-            className="hidden sm:inline-flex"
+            // `max-sm:hidden` rather than `hidden sm:inline-flex`: the button
+            // base class already sets `inline-flex`, and between two plain
+            // utilities the later one in Tailwind's sheet wins — which left the
+            // button showing on phones. A variant always sorts after it.
+            className="max-sm:hidden"
           >
             {bookLabel}
           </ButtonLink>

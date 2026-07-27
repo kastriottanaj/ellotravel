@@ -5,6 +5,7 @@
 const sq = {
   nav: {
     home: "Ballina",
+    skipToContent: "Kalo te përmbajtja",
     hotels: "Hotelet",
     flights: "Fluturimet",
     offers: "Ofertat",

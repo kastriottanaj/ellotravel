@@ -20,7 +20,9 @@ export function AgencyJsonLd({ locale }: { locale: Locale }) {
     email: site.email,
     telephone: site.phones.map((phone) => phone.e164),
     description: dict.meta.homeDescription,
-    image: `${site.url}/opengraph-image`,
+    // The OG image route lives under the locale segment; the bare path only
+    // resolves via a proxy redirect, and lands on the crawler's language.
+    image: `${site.url}/${locale}/opengraph-image`,
     address: {
       "@type": "PostalAddress",
       streetAddress: site.address.street,

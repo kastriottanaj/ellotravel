@@ -73,6 +73,18 @@ export function InquiryForm({
   const formRef = useRef<HTMLFormElement>(null);
 
   /**
+   * Field defaults. Idle, these are the empty form; after a rejected submit
+   * they are what the visitor typed, handed back by the action. That is what
+   * keeps the no-JavaScript path usable — there, the browser replaces the
+   * page wholesale, so an unticked consent box would otherwise cost every
+   * other answer on the form.
+   *
+   * Inputs the visitor has touched are already dirty, so React leaves them
+   * alone on re-render; untouched ones pick the echoed value up.
+   */
+  const values = state.values;
+
+  /**
    * Hotel and route cards link here as ?subject=hotel&ref=royal-g so the
    * visitor doesn't have to re-explain what they were just looking at.
    *
@@ -162,7 +174,7 @@ export function InquiryForm({
       className="rounded-2xl border border-ocean-100 bg-white p-6 shadow-card sm:p-8"
     >
       <input type="hidden" name="locale" value={locale} />
-      <input type="hidden" name="reference" defaultValue="" />
+      <input type="hidden" name="reference" defaultValue={values.reference} />
       {/* Honeypot — hidden from people, tempting to bots. */}
       <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
         <label htmlFor="company">Company</label>
@@ -192,6 +204,7 @@ export function InquiryForm({
             type="text"
             autoComplete="name"
             required
+            defaultValue={values.name}
             placeholder={dict.form.namePlaceholder}
             aria-invalid={state.errors.includes("name")}
             aria-describedby={state.errors.includes("name") ? "name-error" : undefined}
@@ -206,6 +219,7 @@ export function InquiryForm({
             type="tel"
             autoComplete="tel"
             required
+            defaultValue={values.phone}
             placeholder={dict.form.phonePlaceholder}
             aria-invalid={state.errors.includes("phone")}
             aria-describedby={state.errors.includes("phone") ? "phone-error" : undefined}
@@ -219,6 +233,7 @@ export function InquiryForm({
             name="email"
             type="email"
             autoComplete="email"
+            defaultValue={values.email}
             placeholder={dict.form.emailPlaceholder}
             aria-invalid={state.errors.includes("email")}
             aria-describedby={state.errors.includes("email") ? "email-error" : undefined}
@@ -230,7 +245,7 @@ export function InquiryForm({
           <select
             id="subject"
             name="subject"
-            defaultValue="flight"
+            defaultValue={values.subject}
             className={FIELD}
           >
             {INQUIRY_SUBJECTS.map((value) => (
@@ -247,7 +262,7 @@ export function InquiryForm({
               id="destination"
               name="destination"
               type="text"
-              defaultValue=""
+              defaultValue={values.destination}
               placeholder={dict.form.destinationPlaceholder}
               className={FIELD}
             />
@@ -255,11 +270,23 @@ export function InquiryForm({
         </div>
 
         <Field label={dict.form.departDate} htmlFor="departDate">
-          <input id="departDate" name="departDate" type="date" className={FIELD} />
+          <input
+            id="departDate"
+            name="departDate"
+            type="date"
+            defaultValue={values.departDate}
+            className={FIELD}
+          />
         </Field>
 
         <Field label={dict.form.returnDate} htmlFor="returnDate">
-          <input id="returnDate" name="returnDate" type="date" className={FIELD} />
+          <input
+            id="returnDate"
+            name="returnDate"
+            type="date"
+            defaultValue={values.returnDate}
+            className={FIELD}
+          />
         </Field>
 
         <Field label={dict.form.adults} htmlFor="adults">
@@ -269,7 +296,7 @@ export function InquiryForm({
             type="number"
             min={1}
             max={20}
-            defaultValue={2}
+            defaultValue={values.adults}
             className={FIELD}
           />
         </Field>
@@ -281,7 +308,7 @@ export function InquiryForm({
             type="number"
             min={0}
             max={20}
-            defaultValue={0}
+            defaultValue={values.children}
             className={FIELD}
           />
         </Field>
@@ -292,6 +319,7 @@ export function InquiryForm({
               id="message"
               name="message"
               rows={4}
+              defaultValue={values.message}
               placeholder={dict.form.messagePlaceholder}
               className={cx(FIELD, "resize-y")}
             />
@@ -304,6 +332,7 @@ export function InquiryForm({
           <input
             type="checkbox"
             name="consent"
+            defaultChecked={values.consent}
             className="mt-0.5 h-4 w-4 rounded border-ocean-300 text-sunset-600 focus:ring-sunset-500"
           />
           <span>{dict.form.consent}</span>
