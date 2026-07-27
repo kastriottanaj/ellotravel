@@ -42,7 +42,7 @@ export const googleReviews = { rating: 4.9, count: 250 } as const;
  * keeps its generated artwork underneath, so a missing file degrades to the
  * illustrated sky rather than to a broken image.
  */
-export const heroImage: string | null = "/hero-flight.jpg";
+export const heroImage: string | null = "/hero-flight.webp";
 
 /**
  * Whole years of trading, for the hero stat strip. The home page is static, so
