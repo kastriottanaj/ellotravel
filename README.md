@@ -68,30 +68,39 @@ header. `src/i18n/detect.ts` reads `X-Country-Code`, then `CF-IPCountry`, then
 `X-Vercel-IP-Country`, so the same code works behind nginx, Cloudflare or
 Vercel without a change.
 
-**These are ordinary request headers and a visitor can send any value they
-like.** That is harmless for choosing a language — never use them for anything
-where being wrong costs something.
+**These are ordinary request headers.** In production nginx overwrites
+`X-Country-Code` on every proxied request, so a visitor cannot choose their own
+country — but on any deployment that does *not* set it, whatever the client
+sends is what the app sees. Harmless for picking a language; never use these
+headers for anything where being wrong costs something.
 
-In production nginx sets `X-Country-Code` from a local MaxMind database:
+Production (Hetzner, nginx → Docker) is already configured:
 
 ```nginx
-# nginx.conf, http block — apt install libnginx-mod-http-geoip2
-geoip2 /usr/share/GeoIP/GeoLite2-Country.mmdb {
+# /etc/nginx/conf.d/geoip2.conf — apt install libnginx-mod-http-geoip2
+geoip2 /usr/share/GeoIP/dbip-country-lite.mmdb {
+  auto_reload 5m;
   $geoip2_country_code source=$remote_addr country iso_code;
 }
 
-# sites-enabled/ellotravel, inside location /
+# /etc/nginx/sites-enabled/ellotravel, inside location /
 proxy_set_header X-Country-Code $geoip2_country_code;
 ```
 
-The variable is empty for addresses the database cannot place; `detect.ts`
-treats that, `XX` and Tor's `T1` as "no country" and moves on. Keep the `.mmdb`
-current with `geoipupdate` on a monthly cron — a stale database misroutes
-quietly, with nothing in the logs to show for it.
+The database is DB-IP IP-to-Country Lite (CC-BY 4.0), which needs no account,
+refreshed by `/etc/cron.monthly/dbip-update`. That script refuses to install a
+database that cannot resolve two known addresses: a truncated download would
+otherwise resolve every visitor to nothing, and the site would fall back to
+browser language sitewide with nothing in the logs to say why. `auto_reload`
+means a new file is picked up without an nginx reload.
 
-Until that nginx change is deployed, the country falls back to the region
-subtag the browser already sends (`de-CH` → `CH`). That reflects where the
-phone was set up rather than where it is, which is why it is only the fallback.
+The variable is empty for addresses the database cannot place; `detect.ts`
+treats that, `XX` and Tor's `T1` as "no country" and moves on.
+
+Where no country header is set at all — local development, or a deploy without
+GeoIP — the country falls back to the region subtag the browser already sends
+(`de-CH` → `CH`). That reflects where the phone was set up rather than where it
+is, which is why it is only the fallback.
 
 Nothing here affects crawlers reaching a specific language: only unprefixed
 paths redirect, every locale URL stays directly reachable, and each page still
