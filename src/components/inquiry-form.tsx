@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
+import { IconArrowRight } from "@/components/icons";
 import { Button } from "@/components/ui";
 import { site, telHref } from "@/data/site";
 import type { Locale } from "@/i18n/config";
@@ -55,6 +56,7 @@ function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: st
   return (
     <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
       {pending ? pendingLabel : label}
+      {!pending && <IconArrowRight className="h-4 w-4" />}
     </Button>
   );
 }
@@ -181,10 +183,12 @@ export function InquiryForm({
         <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <h2 className="text-xl font-bold text-ocean-950">
-        {dict.form.title}
-      </h2>
-      <p className="mt-1.5 text-sm text-ocean-700">{dict.form.subtitle}</p>
+      <h2 className="text-xl font-bold text-ocean-950">{dict.form.title}</h2>
+      <span
+        aria-hidden="true"
+        className="mt-2.5 block h-1 w-14 rounded-full bg-sunset-500"
+      />
+      <p className="mt-3 text-sm text-ocean-700">{dict.form.subtitle}</p>
 
       {state.status === "error" && state.errors.length === 0 && (
         <div

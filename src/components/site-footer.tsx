@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IconClock, IconMail, IconPhone, IconPin } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { site, telHref } from "@/data/site";
 import { popularDestinations } from "@/data/destinations";
@@ -38,9 +39,13 @@ export function SiteFooter({
         </div>
 
         <nav aria-label={dict.footer.quickLinks}>
-          <h2 className="text-sm font-semibold text-ocean-950">
+          <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-ocean-950">
             {dict.footer.quickLinks}
           </h2>
+          <span
+            aria-hidden="true"
+            className="mt-2.5 block h-1 w-10 rounded-full bg-sunset-500"
+          />
           <ul className="mt-4 space-y-2.5 text-sm">
             {nav.map((item) => (
               <li key={item.href}>
@@ -56,9 +61,13 @@ export function SiteFooter({
         </nav>
 
         <nav aria-label={dict.flights.popularRoutes}>
-          <h2 className="text-sm font-semibold text-ocean-950">
+          <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-ocean-950">
             {dict.flights.popularRoutes}
           </h2>
+          <span
+            aria-hidden="true"
+            className="mt-2.5 block h-1 w-10 rounded-full bg-sunset-500"
+          />
           <ul className="mt-4 space-y-2.5 text-sm">
             {routes.map((destination) => (
               <li key={destination.slug}>
@@ -74,28 +83,40 @@ export function SiteFooter({
         </nav>
 
         <div>
-          <h2 className="text-sm font-semibold text-ocean-950">
+          <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-ocean-950">
             {dict.footer.contactUs}
           </h2>
+          <span
+            aria-hidden="true"
+            className="mt-2.5 block h-1 w-10 rounded-full bg-sunset-500"
+          />
           <address className="mt-4 space-y-2.5 text-sm not-italic text-ocean-700">
-            <p>
-              {site.address.street}
-              <br />
-              {site.address.city}, {site.address.region}
+            <p className="flex items-start gap-2.5">
+              <IconPin className="mt-0.5 h-4 w-4 shrink-0 text-sunset-500" />
+              <span>
+                {site.address.street}
+                <br />
+                {site.address.city}, {site.address.region}
+              </span>
             </p>
             {site.phones.map((phone, index) => (
-              <p key={phone.e164}>
+              <p key={phone.e164} className="flex items-center gap-2.5">
+                <IconPhone className="h-4 w-4 shrink-0 text-sunset-500" />
                 <a href={telHref(index)} className="font-semibold text-ocean-900 hover:text-sunset-600">
                   {phone.display}
                 </a>
               </p>
             ))}
-            <p>
+            <p className="flex items-center gap-2.5">
+              <IconMail className="h-4 w-4 shrink-0 text-sunset-500" />
               <a href={`mailto:${site.email}`} className="hover:text-sunset-600">
                 {site.email}
               </a>
             </p>
-            <p className="pt-1 text-ocean-600">{dict.contact.hoursValue}</p>
+            <p className="flex items-center gap-2.5 pt-1 text-ocean-600">
+              <IconClock className="h-4 w-4 shrink-0 text-ocean-400" />
+              {dict.contact.hoursValue}
+            </p>
           </address>
         </div>
       </div>
