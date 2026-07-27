@@ -3,31 +3,26 @@ import { join } from "node:path";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { DestinationCard, HotelCard, OfferTile } from "@/components/cards";
 import {
-  GoogleMark,
   IconArrowRight,
   IconBriefcase,
   IconHeadset,
-  IconMedal,
   IconPlane,
-  IconShieldCheck,
   IconTag,
   IconUser,
-  IconUsers,
 } from "@/components/icons";
 import { Scene } from "@/components/scene";
-import { ButtonLink, Stars } from "@/components/ui";
+import { TrustBar } from "@/components/trust-bar";
+import { ButtonLink, SectionHeading, Stars } from "@/components/ui";
 import { destinations, popularDestinations } from "@/data/destinations";
 import { featuredHotels } from "@/data/hotels";
 import { featuredOffers } from "@/data/offers";
-import { googleReviews, heroImage, site, yearsTrading } from "@/data/site";
+import { heroImage, site, yearsTrading } from "@/data/site";
 import { initials, testimonials } from "@/data/testimonials";
 import { getDictionary, resolveLocale } from "@/i18n";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
-import { cx, fill, formatRating } from "@/lib/format";
 import { alternatesFor } from "@/lib/seo";
 
 type PageProps = { params: Promise<{ locale: string }> };
@@ -57,45 +52,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: dict.meta.homeDescription,
     alternates: alternatesFor(locale),
   };
-}
-
-/**
- * Section heading for the home page: sans-serif with a short rule under it,
- * and room for a "view all" link on the right.
- */
-function SectionHead({
-  id,
-  title,
-  description,
-  action,
-}: {
-  id: string;
-  title: string;
-  description?: string;
-  action?: ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-      <div className="max-w-2xl">
-        <h2
-          id={id}
-          className="text-2xl font-bold tracking-tight text-ocean-950 text-balance sm:text-3xl"
-        >
-          {title}
-        </h2>
-        <span
-          aria-hidden="true"
-          className="mt-3 block h-1 w-14 rounded-full bg-sunset-500"
-        />
-        {description && (
-          <p className="mt-4 text-base leading-relaxed text-ocean-700 text-pretty">
-            {description}
-          </p>
-        )}
-      </div>
-      {action && <div className="shrink-0">{action}</div>}
-    </div>
-  );
 }
 
 function Hero({ locale, dict }: SectionProps) {
@@ -173,66 +129,6 @@ function Hero({ locale, dict }: SectionProps) {
             </li>
           ))}
         </ul>
-      </div>
-    </section>
-  );
-}
-
-/**
- * The proof strip. It overlaps the hero so the rating is the first thing under
- * the fold on a phone — the point where enquiries are won or lost.
- */
-function TrustBar({ locale, dict }: SectionProps) {
-  const badges = [
-    {
-      icon: IconMedal,
-      label: dict.home.badgeLicensed,
-      tone: "bg-sunset-50 text-sunset-600",
-    },
-    {
-      icon: IconUsers,
-      label: dict.home.badgeClients,
-      tone: "bg-ocean-50 text-ocean-600",
-    },
-    {
-      icon: IconShieldCheck,
-      label: dict.home.badgeTransparent,
-      tone: "bg-ocean-50 text-ocean-800",
-    },
-  ];
-  const rating = `${formatRating(googleReviews.rating, locale)}/5`;
-
-  return (
-    <section className="container-page relative z-10 -mt-9">
-      <div className="grid gap-5 rounded-2xl bg-white p-5 shadow-lift ring-1 ring-ocean-100 sm:grid-cols-2 sm:p-6 lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-ocean-100">
-        <div className="flex items-center gap-3 lg:pr-6">
-          <GoogleMark className="h-8 w-8 shrink-0" />
-          <div className="min-w-0">
-            <p className="flex items-center gap-2">
-              <Stars count={5} label={rating} size="md" />
-              <span className="text-sm font-bold text-ocean-950">{rating}</span>
-            </p>
-            <p className="mt-0.5 text-xs text-ocean-600">
-              {fill(dict.home.reviewsLabel, { count: googleReviews.count })}
-            </p>
-          </div>
-        </div>
-
-        {badges.map(({ icon: Icon, label, tone }) => (
-          <div key={label} className="flex items-center gap-3 lg:px-6 lg:last:pr-0">
-            <span
-              className={cx(
-                "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-                tone,
-              )}
-            >
-              <Icon className="h-5 w-5" />
-            </span>
-            <p className="text-sm font-semibold leading-snug text-ocean-900 text-pretty">
-              {label}
-            </p>
-          </div>
-        ))}
       </div>
     </section>
   );
@@ -343,7 +239,7 @@ function Offers({ locale, dict }: SectionProps) {
       aria-labelledby="home-offers"
       className="container-page pb-16 lg:pb-20"
     >
-      <SectionHead
+      <SectionHeading
         id="home-offers"
         title={dict.home.offersTitle}
         action={
@@ -406,7 +302,7 @@ function PopularRoutes({ locale, dict }: SectionProps) {
 function Hotels({ locale, dict }: SectionProps) {
   return (
     <section aria-labelledby="home-hotels" className="container-page py-16 lg:py-20">
-      <SectionHead
+      <SectionHeading
         id="home-hotels"
         title={dict.home.hotelsTitle}
         description={dict.home.hotelsSubtitle}
@@ -429,7 +325,7 @@ function Flights({ locale, dict }: SectionProps) {
   return (
     <section aria-labelledby="home-flights" className="bg-sand-50 py-16 lg:py-20">
       <div className="container-page">
-        <SectionHead
+        <SectionHeading
           id="home-flights"
           title={dict.home.flightsTitle}
           description={dict.home.flightsSubtitle}
@@ -475,7 +371,7 @@ function WhyUs({ dict }: SectionProps) {
 
   return (
     <section aria-labelledby="home-why" className="container-page py-16 lg:py-20">
-      <SectionHead id="home-why" title={dict.home.whyTitle} />
+      <SectionHeading id="home-why" title={dict.home.whyTitle} />
       <div className="mt-10 grid gap-6 md:grid-cols-3">
         {reasons.map((item) => (
           <div
@@ -534,7 +430,7 @@ export default async function HomePage({ params }: PageProps) {
   return (
     <>
       <Hero {...props} />
-      <TrustBar {...props} />
+      <TrustBar {...props} overlap />
       <Features {...props} />
       <Testimonials {...props} />
       <Offers {...props} />

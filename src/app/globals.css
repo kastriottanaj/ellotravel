@@ -31,7 +31,10 @@
   --color-sand-200: #ece2d4;
 
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-display), ui-serif, Georgia, serif;
+  /* Headings share the body family and earn their weight from size and boldness
+     instead of a second face — one webfont for the whole site. `font-display`
+     stays as a utility so heading intent is still visible in the markup. */
+  --font-display: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 
   --shadow-card: 0 1px 2px rgb(15 48 73 / 0.06), 0 8px 24px -12px rgb(15 48 73 / 0.18);
   --shadow-lift: 0 2px 4px rgb(15 48 73 / 0.08), 0 18px 40px -18px rgb(15 48 73 / 0.3);

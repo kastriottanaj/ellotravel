@@ -58,13 +58,20 @@ export function Button({
   return <button className={buttonClass(variant, size, className)} {...props} />;
 }
 
+/**
+ * Section heading: bold sans title over a short orange rule, with room for a
+ * "view all" link on the right. `id` pairs with `aria-labelledby` on the
+ * section, so the page outline reads correctly in a screen reader.
+ */
 export function SectionHeading({
+  id,
   kicker,
   title,
   description,
   align = "left",
   action,
 }: {
+  id?: string;
   kicker?: string;
   title: string;
   description?: string;
@@ -74,7 +81,7 @@ export function SectionHeading({
   return (
     <div
       className={cx(
-        "flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between",
+        "flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between",
         align === "center" && "sm:flex-col sm:items-center",
       )}
     >
@@ -84,11 +91,21 @@ export function SectionHeading({
             {kicker}
           </p>
         )}
-        <h2 className="font-display text-3xl font-semibold tracking-tight text-ocean-950 text-balance sm:text-4xl">
+        <h2
+          id={id}
+          className="text-2xl font-bold tracking-tight text-ocean-950 text-balance sm:text-3xl"
+        >
           {title}
         </h2>
+        <span
+          aria-hidden="true"
+          className={cx(
+            "mt-3 block h-1 w-14 rounded-full bg-sunset-500",
+            align === "center" && "mx-auto",
+          )}
+        />
         {description && (
-          <p className="mt-3 text-base leading-relaxed text-ocean-700 text-pretty">
+          <p className="mt-4 text-base leading-relaxed text-ocean-700 text-pretty">
             {description}
           </p>
         )}

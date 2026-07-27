@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DestinationCard } from "@/components/cards";
-import { Scene } from "@/components/scene";
-import { ButtonLink } from "@/components/ui";
+import { IconArrowRight } from "@/components/icons";
+import { PageHero } from "@/components/page-hero";
+import { TrustBar } from "@/components/trust-bar";
+import { ButtonLink, SectionHeading } from "@/components/ui";
 import {
   countries,
   destinations,
@@ -97,43 +99,28 @@ export default async function FlightRoutePage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section className="relative isolate overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <Scene theme={destination.scene} rounded={false} />
-          <div className="absolute inset-0 bg-gradient-to-br from-ocean-950/85 via-ocean-900/70 to-ocean-800/55" />
-        </div>
-
-        <div className="container-page py-16 lg:py-20">
-          <nav aria-label="Breadcrumb" className="text-sm text-ocean-200">
+      <PageHero
+        kicker={`${hubAirport.city[locale]} (${hubAirport.iata}) → ${city} (${destination.iata})`}
+        title={fill(dict.meta.routeTitle, { city })}
+        description={fill(dict.flights.routeIntro, { city, country })}
+        theme={destination.scene}
+        breadcrumb={
+          <nav aria-label="Breadcrumb" className="mb-6 text-sm text-ocean-200">
             <Link href={`/${locale}/flights`} className="hover:text-white">
               {dict.flights.title}
             </Link>
             <span className="mx-2 text-ocean-400">/</span>
             <span className="text-white">{city}</span>
           </nav>
-
-          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span className="font-display text-2xl font-medium text-ocean-100 sm:text-3xl">
-              {hubAirport.city[locale]}
-            </span>
-            <svg viewBox="0 0 48 24" aria-hidden="true" className="h-6 w-12 fill-sunset-300">
-              <path d="M2 12h34l-6-7h5l10 7-10 7h-5l6-7H2Z" />
-            </svg>
-            <h1 className="font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              {city}
-            </h1>
-          </div>
-
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ocean-100">
-            {fill(dict.flights.routeIntro, { city, country })}
-          </p>
-
-          <div className="mt-8 flex flex-wrap gap-3">
+        }
+        actions={
+          <>
             <ButtonLink
               href={`/${locale}/contact?subject=flight&ref=${destination.slug}`}
               size="lg"
             >
               {dict.flights.askPrice}
+              <IconArrowRight className="h-4 w-4" />
             </ButtonLink>
             <ButtonLink
               href={whatsappHref(enquiry)}
@@ -144,9 +131,11 @@ export default async function FlightRoutePage({ params }: PageProps) {
             >
               WhatsApp
             </ButtonLink>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      />
+
+      <TrustBar locale={locale} dict={dict} overlap />
 
       <div className="container-page grid gap-10 py-14 lg:grid-cols-3">
         <div className="lg:col-span-2">
@@ -154,12 +143,12 @@ export default async function FlightRoutePage({ params }: PageProps) {
             {facts.map((fact) => (
               <div
                 key={fact.label}
-                className="rounded-xl bg-sand-50 p-4 ring-1 ring-sand-200"
+                className="rounded-xl bg-white p-4 shadow-card ring-1 ring-ocean-100"
               >
                 <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-ocean-600">
                   {fact.label}
                 </dt>
-                <dd className="mt-1.5 font-display text-lg font-semibold text-ocean-950">
+                <dd className="mt-1.5 text-lg font-bold text-ocean-950">
                   {fact.value}
                 </dd>
               </div>
@@ -174,7 +163,7 @@ export default async function FlightRoutePage({ params }: PageProps) {
 
         <aside>
           <div className="rounded-2xl bg-ocean-900 p-6 text-white">
-            <h2 className="font-display text-lg font-semibold">
+            <h2 className="text-lg font-bold">
               {dict.flights.baggageTitle}
             </h2>
             <ul className="mt-4 space-y-2.5 text-sm text-ocean-100">
@@ -196,7 +185,7 @@ export default async function FlightRoutePage({ params }: PageProps) {
                 <li key={phone.e164}>
                   <a
                     href={`tel:${phone.e164}`}
-                    className="font-display text-lg font-semibold hover:text-sunset-300"
+                    className="text-lg font-bold hover:text-sunset-300"
                   >
                     {phone.display}
                   </a>
@@ -207,11 +196,9 @@ export default async function FlightRoutePage({ params }: PageProps) {
         </aside>
       </div>
 
-      <section className="bg-sand-50 py-16">
+      <section aria-labelledby="other-routes" className="bg-sand-50 py-16">
         <div className="container-page">
-          <h2 className="font-display text-2xl font-semibold text-ocean-950">
-            {dict.flights.popularRoutes}
-          </h2>
+          <SectionHeading id="other-routes" title={dict.flights.popularRoutes} />
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {others.map((item) => (
               <DestinationCard

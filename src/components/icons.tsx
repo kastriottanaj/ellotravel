@@ -129,6 +129,15 @@ export function IconTag(props: IconProps) {
   );
 }
 
+export function IconClock(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="8.8" />
+      <path d="M12 7.2V12l3.2 2.2" />
+    </Icon>
+  );
+}
+
 export function IconArrowRight(props: IconProps) {
   return (
     <Icon {...props}>

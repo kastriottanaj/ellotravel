@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "../globals.css";
 import { AnalyticsConsent } from "@/components/analytics";
 import { ContactFab } from "@/components/contact-fab";
@@ -15,12 +15,6 @@ import { alternatesFor } from "@/lib/seo";
 
 const bodyFont = Plus_Jakarta_Sans({
   variable: "--font-body",
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-});
-
-const displayFont = Fraunces({
-  variable: "--font-display",
   subsets: ["latin", "latin-ext"],
   display: "swap",
 });
@@ -76,7 +70,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${bodyFont.variable} ${displayFont.variable} h-full antialiased`}
+      className={`${bodyFont.variable} h-full antialiased`}
     >
       {/* The bottom padding is the height of the sticky mobile CTA bar, so it
           never covers the last line of the footer. */}

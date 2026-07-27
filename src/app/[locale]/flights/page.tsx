@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { DestinationCard } from "@/components/cards";
+import { IconArrowRight } from "@/components/icons";
 import { PageHero } from "@/components/page-hero";
-import { SectionHeading } from "@/components/ui";
+import { TrustBar } from "@/components/trust-bar";
+import { ButtonLink, SectionHeading } from "@/components/ui";
+import { hubAirport, whatsappHref } from "@/data/site";
 import {
   countries,
   destinations,
@@ -53,16 +56,33 @@ export default async function FlightsPage({ params }: PageProps) {
   return (
     <>
       <PageHero
-        kicker={dict.nav.flights}
+        kicker={`${hubAirport.city[locale]} (${hubAirport.iata}) — ${destinations.length}+`}
         title={dict.flights.title}
         description={dict.flights.subtitle}
         theme="metropolis"
+        actions={
+          <>
+            <ButtonLink href={`/${locale}/contact?subject=flight`} size="lg">
+              {dict.flights.askPrice}
+              <IconArrowRight className="h-4 w-4" />
+            </ButtonLink>
+            <ButtonLink
+              href={whatsappHref(dict.form.title)}
+              variant="onDark"
+              size="lg"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {dict.common.whatsapp}
+            </ButtonLink>
+          </>
+        }
       >
         <ul className="flex flex-wrap gap-2.5">
           {included.map((item) => (
             <li
               key={item}
-              className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-sm text-white ring-1 ring-white/15"
+              className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-sm text-white ring-1 ring-white/15 backdrop-blur-sm"
             >
               <svg viewBox="0 0 20 20" aria-hidden="true" className="h-4 w-4 fill-sunset-300">
                 <path d="M8.2 13.4 4.9 10l-1.2 1.2 4.5 4.5 9-9-1.2-1.2z" />
@@ -73,8 +93,11 @@ export default async function FlightsPage({ params }: PageProps) {
         </ul>
       </PageHero>
 
-      <section className="container-page py-16">
+      <TrustBar locale={locale} dict={dict} overlap />
+
+      <section aria-labelledby="popular-routes" className="container-page py-16">
         <SectionHeading
+          id="popular-routes"
           title={dict.flights.popularRoutes}
           description={dict.flights.priceNote}
         />
@@ -90,13 +113,14 @@ export default async function FlightsPage({ params }: PageProps) {
         </div>
       </section>
 
-      <section className="bg-sand-50 py-16">
+      <section aria-labelledby="all-routes" className="bg-sand-50 py-16">
         <div className="container-page">
-          <SectionHeading title={dict.flights.allRoutes} />
+          <SectionHeading id="all-routes" title={dict.flights.allRoutes} />
           <div className="mt-10 space-y-10">
             {countryCodes.map((code) => (
               <div key={code}>
-                <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-sunset-600">
+                <h3 className="mb-4 flex items-center gap-2.5 text-sm font-bold uppercase tracking-[0.16em] text-sunset-600">
+                  <span aria-hidden="true" className="h-px w-6 bg-sunset-300" />
                   {countries[code][locale]}
                 </h3>
                 <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
