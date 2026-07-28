@@ -156,7 +156,11 @@
       "Bash(node -e \"console.log\\('eslint ', require\\('eslint/package.json'\\).version\\); console.log\\('minimatch', require\\('minimatch/package.json'\\).version\\)\")",
       "Bash(node -e \"console.log\\('brace-exp', JSON.parse\\(require\\('fs'\\).readFileSync\\('node_modules/brace-expansion/package.json','utf8'\\)\\).version\\)\")",
       "Bash(xargs -I{} echo \"error lines: {}\")",
-      "Bash(ssh -o BatchMode=yes -o ConnectTimeout=10 root@157.180.122.123 'echo \"=== proxy_set_header lines in the vhost ===\"; grep -n \"proxy_set_header\\\\|limit_req\\\\|add_header\" /etc/nginx/sites-enabled/ellotravel 2>/dev/null; echo; echo \"=== any XFF set globally? ===\"; grep -rn \"X-Forwarded-For\\\\|X-Real-IP\" /etc/nginx/nginx.conf /etc/nginx/conf.d/ 2>/dev/null | head')"
+      "Bash(npm ci *)",
+      "Bash(echo \"ci-dry-run exit=$?\")",
+      "Bash(git -C /Users/kastriot/Desktop/ellotravel rev-parse --short HEAD)",
+      "Bash(rm -f /Users/kastriot/Desktop/ellotravel/ellotravel-*.tar)",
+      "Bash(git -C /Users/kastriot/Desktop/ellotravel archive --format=tar -o /private/tmp/claude-501/-Users-kastriot-Desktop-ellotravel/75860415-42bf-41db-8aec-0552cf95457f/scratchpad/ellotravel-__CMDSUB_OUTPUT__.tar HEAD)"
     ],
     "additionalDirectories": [
       "/Users/kastriot/Desktop/ellotravel/src/app",
