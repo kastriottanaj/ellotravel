@@ -167,6 +167,9 @@ const sq = {
     errorTitle: "Diçka shkoi keq",
     errorBody:
       "Kërkesa nuk u dërgua. Provoni përsëri ose na telefononi direkt.",
+    throttledTitle: "Shumë kërkesa njëra pas tjetrës",
+    throttledBody:
+      "Kemi marrë tashmë disa kërkesa nga ju. Prisni pak para se të dërgoni një tjetër — ose na telefononi direkt dhe e zgjidhim menjëherë.",
     sendAnother: "Dërgo një kërkesë tjetër",
     required: "kërkohet",
     errName: "Ju lutemi shkruani emrin tuaj.",

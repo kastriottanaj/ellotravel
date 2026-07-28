@@ -35,6 +35,12 @@ yarn-error.log*
 # ...but the template carries no secrets and documents the required variables.
 !.env.example
 
+# claude code
+# The project settings file is committed on purpose — it records which commands
+# the team has approved. Anything naming the production host or a private key
+# lives in the local file instead, which never leaves this machine.
+.claude/settings.local.json
+
 # vercel
 .vercel
 

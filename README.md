@@ -150,11 +150,54 @@ connections many visitors arrive on. Validation returns field names; the client
 renders the message in the visitor's language.
 
 Copy `.env.example` to `.env.local` and fill in the values. Without them the
-site still works: the enquiry validates, the visitor sees the success screen,
-and the payload goes to the server log rather than being dropped. Set them
+site still works: the enquiry validates and the visitor sees the success
+screen. In development the payload goes to the server log; in production it is
+dropped, and only the fact that it happened is recorded. Set the variables
 before launch so enquiries reach the inbox.
 
-Spam is handled with a honeypot field; there is no captcha.
+### Keeping it from being abused
+
+A server action is a public POST endpoint. The form in front of it is a
+convenience, not a gate — anything below has to hold for a payload written by a
+script that never rendered the page.
+
+- **A honeypot field**, and no captcha. It is deliberately not named
+  `company` and carries no label: that pairing is what browser address-profile
+  autofill looks for, and a honeypot the visitor's browser fills is a booking
+  silently thrown away.
+- **Five enquiries per IP per fifteen minutes** (`src/lib/rate-limit.ts`),
+  counted after validation so correcting a rejected form never costs a turn.
+  Past the limit the visitor is told to wait or phone, rather than shown an
+  error implying they did something wrong. **The counter lives in process
+  memory**, which is exactly right for one container and wrong the moment
+  there are two — a second replica needs a shared store.
+- **The address comes from the right-hand end of `X-Forwarded-For`**, which
+  is the hop nginx actually saw. Reading the left-hand end would let one script
+  claim to be thousands of visitors.
+- **Every field is capped and stripped of control characters**
+  (`FIELD_LIMITS` in `src/lib/inquiry.ts`) before it is validated, emailed or
+  echoed back. The visitor's name reaches the mail *subject*, so a stray
+  carriage return there would be a header injection rather than a cosmetic
+  problem.
+- **Enquiries are not written to the log in production.** Without a mail
+  provider configured only the shape of one is recorded — a name, phone number
+  and travel plans do not belong in `docker logs`. In development the full
+  payload is still logged, so the form can be worked on without Resend.
+
+Blunt flooding of the endpoint itself is nginx's job, not the app's. Add a
+`limit_req` zone on the contact location if it ever becomes a problem.
+
+### Response headers
+
+`next.config.ts` sends a CSP, `X-Frame-Options`, `X-Content-Type-Options`,
+`Referrer-Policy`, `Permissions-Policy` and HSTS on every response.
+
+The CSP allows `'unsafe-inline'` for scripts, knowingly: React streams its
+payload through inline scripts, and the alternative — a per-request nonce from
+`proxy.ts` — would make every page dynamic and throw away the prerendering the
+site is built on. HSTS is sent without `includeSubDomains` or `preload`, both
+of which are one-way doors; add them once every host under `ellotravel.net` is
+known to be served over TLS.
 
 ## Before this goes live
 

@@ -3,10 +3,11 @@ import { cx } from "@/lib/format";
 
 export function Logo({
   className,
-  priority = false,
+  preload = false,
 }: {
   className?: string;
-  priority?: boolean;
+  /** Next 16 deprecated `priority` in favour of this. */
+  preload?: boolean;
 }) {
   return (
     <Image
@@ -14,7 +15,7 @@ export function Logo({
       alt="Ello Travel"
       width={351}
       height={288}
-      priority={priority}
+      preload={preload}
       className={cx("h-auto w-20", className)}
     />
   );

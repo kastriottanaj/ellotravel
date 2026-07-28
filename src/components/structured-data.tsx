@@ -4,6 +4,27 @@ import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 
 /**
+ * A `<script type="application/ld+json">` block.
+ *
+ * `JSON.stringify` escapes nothing that matters to an HTML parser, so a `<`
+ * inside any string would be read as markup: the first `</script>` in a hotel
+ * description or a translated blurb closes this tag early and hands the rest
+ * of the object to the parser as page content. Everything fed to this today is
+ * written in the repo, and escaping `<` is what keeps that from being the
+ * reason it is safe.
+ */
+export function JsonLd({ data }: { data: unknown }) {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(data).replace(/</g, "\\u003c"),
+      }}
+    />
+  );
+}
+
+/**
  * TravelAgency + LocalBusiness markup. This is what makes the agency eligible
  * for a Google business panel on searches like "agjenci udhëtimesh Klinë",
  * so the address, phone and opening hours must stay in sync with reality.
@@ -56,10 +77,5 @@ export function AgencyJsonLd({ locale }: { locale: Locale }) {
     })),
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return <JsonLd data={data} />;
 }

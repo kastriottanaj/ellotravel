@@ -165,6 +165,9 @@ const de: Dictionary = {
     errorTitle: "Etwas ist schiefgelaufen",
     errorBody:
       "Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut oder rufen Sie uns direkt an.",
+    throttledTitle: "Zu viele Anfragen hintereinander",
+    throttledBody:
+      "Wir haben bereits mehrere Anfragen von Ihnen erhalten. Bitte warten Sie einen Moment, bevor Sie eine weitere senden — oder rufen Sie uns direkt an, dann klären wir es sofort.",
     sendAnother: "Weitere Anfrage senden",
     required: "erforderlich",
     errName: "Bitte geben Sie Ihren Namen ein.",

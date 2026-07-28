@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { HotelCard } from "@/components/cards";
 import { SceneCover } from "@/components/scene";
 import { IconPin } from "@/components/icons";
+import { JsonLd } from "@/components/structured-data";
 import { ButtonLink, SectionHeading, Stars } from "@/components/ui";
 import {
   amenityCatalog,
@@ -77,10 +78,7 @@ export default async function HotelPage({ params }: PageProps) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       <section className="relative isolate">
         <div className="h-[38vh] min-h-[260px] w-full sm:h-[46vh]">

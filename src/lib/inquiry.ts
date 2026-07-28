@@ -3,6 +3,29 @@ import { site } from "@/data/site";
 export const INQUIRY_SUBJECTS = ["flight", "hotel", "package", "other"] as const;
 export type InquirySubject = (typeof INQUIRY_SUBJECTS)[number];
 
+/**
+ * How much of each field is kept. The action truncates to these before the
+ * value reaches validation, the enquiry email or the echoed form — a server
+ * action accepts up to 1MB per request, and none of it should end up in a
+ * mail header or an inbox on the strength of the form's own `maxlength`.
+ *
+ * Generous rather than tight: a long Albanian name and a Swiss address both
+ * fit comfortably, and the point is to have a ceiling at all.
+ */
+export const FIELD_LIMITS = {
+  name: 120,
+  phone: 40,
+  /** The longest address RFC 5321 permits. */
+  email: 254,
+  subject: 16,
+  destination: 160,
+  /** YYYY-MM-DD. */
+  date: 10,
+  reference: 64,
+  message: 4000,
+  locale: 8,
+} as const;
+
 export type InquiryField =
   | "name"
   | "phone"
@@ -48,7 +71,12 @@ export const emptyInquiryValues: InquiryValues = {
 };
 
 export type InquiryState = {
-  status: "idle" | "success" | "error";
+  /**
+   * `throttled` is separated from `error` on purpose: nothing is wrong with
+   * what the visitor typed, and the form says so rather than implying they
+   * should try again immediately.
+   */
+  status: "idle" | "success" | "error" | "throttled";
   /** Field names only — the client renders the translated message. */
   errors: InquiryField[];
   values: InquiryValues;
@@ -108,6 +136,21 @@ function escapeHtml(value: string) {
     .replace(/"/g, "&quot;");
 }
 
+/**
+ * The one string here that becomes a mail *header* rather than body text.
+ *
+ * The action already strips control characters and caps every field, so this
+ * is belt and braces — but it is the last place the value is ours before a
+ * transport turns it into `Subject:`, and a CR reaching that point is a header
+ * injection rather than a stray character.
+ */
+function mailSubject(inquiry: Inquiry) {
+  return `Kërkesë e re: ${inquiry.subject} — ${inquiry.name}`
+    .replace(/[\u0000-\u001f\u007f]/g, " ")
+    .slice(0, 200)
+    .trim();
+}
+
 function toHtml(inquiry: Inquiry) {
   const rows: Array<[string, string]> = [
     ["Emri", inquiry.name],
@@ -141,9 +184,11 @@ function toHtml(inquiry: Inquiry) {
  * Sends the enquiry to the agency's inbox through Resend's REST API — called
  * with fetch rather than the SDK so the project stays dependency-free.
  *
- * With no RESEND_API_KEY configured the enquiry is logged instead of dropped,
- * so local development and a not-yet-configured production deploy both behave
- * predictably. Returns whether it actually left the building.
+ * With no RESEND_API_KEY configured nothing is sent. In development the
+ * enquiry is logged in full so the form can be worked on without a mail
+ * provider; in production only its shape is, because the visitor's details do
+ * not belong in container logs. Either way the visitor sees the success
+ * screen — the return value says whether it actually left the building.
  */
 export async function deliverInquiry(inquiry: Inquiry): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
@@ -151,10 +196,21 @@ export async function deliverInquiry(inquiry: Inquiry): Promise<boolean> {
   const from = process.env.INQUIRY_FROM_EMAIL;
 
   if (!apiKey || !from) {
-    console.info("[inquiry] no mail provider configured — logging instead", {
-      ...inquiry,
-      message: inquiry.message.slice(0, 200),
-    });
+    // An enquiry is somebody's name, phone number and travel plans, and
+    // container logs are read, shipped and kept far more casually than an
+    // inbox. Off a developer's machine, only the shape of it is recorded.
+    if (process.env.NODE_ENV === "production") {
+      console.warn("[inquiry] no mail provider configured — enquiry dropped", {
+        subject: inquiry.subject,
+        locale: inquiry.locale,
+        reference: inquiry.reference || null,
+      });
+    } else {
+      console.info("[inquiry] no mail provider configured — logging instead", {
+        ...inquiry,
+        message: inquiry.message.slice(0, 200),
+      });
+    }
     return false;
   }
 
@@ -168,7 +224,7 @@ export async function deliverInquiry(inquiry: Inquiry): Promise<boolean> {
       from,
       to: [to],
       reply_to: inquiry.email || undefined,
-      subject: `Kërkesë e re: ${inquiry.subject} — ${inquiry.name}`,
+      subject: mailSubject(inquiry),
       html: toHtml(inquiry),
     }),
   });

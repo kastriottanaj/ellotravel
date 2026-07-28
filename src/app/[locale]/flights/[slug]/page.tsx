@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { DestinationCard } from "@/components/cards";
 import { IconArrowRight } from "@/components/icons";
 import { PageHero } from "@/components/page-hero";
+import { JsonLd } from "@/components/structured-data";
 import { TrustBar } from "@/components/trust-bar";
 import { ButtonLink, SectionHeading } from "@/components/ui";
 import {
@@ -94,10 +95,7 @@ export default async function FlightRoutePage({ params }: PageProps) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       <PageHero
         kicker={`${hubAirport.city[locale]} (${hubAirport.iata}) → ${city} (${destination.iata})`}

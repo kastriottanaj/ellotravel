@@ -9,6 +9,7 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 import { cx } from "@/lib/format";
 import {
+  FIELD_LIMITS,
   initialInquiryState,
   INQUIRY_SUBJECTS,
   type InquiryField,
@@ -177,10 +178,23 @@ export function InquiryForm({
     >
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="reference" defaultValue={values.reference} />
-      {/* Honeypot — hidden from people, tempting to bots. */}
+      {/*
+        Honeypot — hidden from people, tempting to bots.
+
+        Deliberately *not* called "company", and deliberately unlabelled: a
+        hidden text input next to a <label>Company</label> is exactly what
+        browser address-profile autofill looks for, and Chrome does not
+        reliably honour autocomplete="off" for it. A filled honeypot silently
+        discards the enquiry, so an autofilled one costs the agency a booking.
+      */}
       <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
-        <label htmlFor="company">Company</label>
-        <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+        <input
+          id="ello_note"
+          name="ello_note"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
       </div>
 
       <h2 className="text-xl font-bold text-ocean-950">{dict.form.title}</h2>
@@ -200,6 +214,17 @@ export function InquiryForm({
         </div>
       )}
 
+      {/* Amber rather than red: nothing the visitor did was wrong. */}
+      {state.status === "throttled" && (
+        <div
+          role="alert"
+          className="mt-5 rounded-xl border border-sunset-200 bg-sunset-50 p-4 text-sm text-ocean-900"
+        >
+          <p className="font-semibold">{dict.form.throttledTitle}</p>
+          <p className="mt-1">{dict.form.throttledBody}</p>
+        </div>
+      )}
+
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <Field label={dict.form.name} htmlFor="name" required error={errorFor("name")}>
           <input
@@ -208,6 +233,7 @@ export function InquiryForm({
             type="text"
             autoComplete="name"
             required
+            maxLength={FIELD_LIMITS.name}
             defaultValue={values.name}
             placeholder={dict.form.namePlaceholder}
             aria-invalid={state.errors.includes("name")}
@@ -223,6 +249,7 @@ export function InquiryForm({
             type="tel"
             autoComplete="tel"
             required
+            maxLength={FIELD_LIMITS.phone}
             defaultValue={values.phone}
             placeholder={dict.form.phonePlaceholder}
             aria-invalid={state.errors.includes("phone")}
@@ -237,6 +264,7 @@ export function InquiryForm({
             name="email"
             type="email"
             autoComplete="email"
+            maxLength={FIELD_LIMITS.email}
             defaultValue={values.email}
             placeholder={dict.form.emailPlaceholder}
             aria-invalid={state.errors.includes("email")}
@@ -266,6 +294,7 @@ export function InquiryForm({
               id="destination"
               name="destination"
               type="text"
+              maxLength={FIELD_LIMITS.destination}
               defaultValue={values.destination}
               placeholder={dict.form.destinationPlaceholder}
               className={FIELD}
@@ -323,6 +352,7 @@ export function InquiryForm({
               id="message"
               name="message"
               rows={4}
+              maxLength={FIELD_LIMITS.message}
               defaultValue={values.message}
               placeholder={dict.form.messagePlaceholder}
               className={cx(FIELD, "resize-y")}

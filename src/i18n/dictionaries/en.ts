@@ -163,6 +163,9 @@ const en: Dictionary = {
     errorTitle: "Something went wrong",
     errorBody:
       "The request wasn't sent. Please try again or call us directly.",
+    throttledTitle: "Too many requests in a row",
+    throttledBody:
+      "We've already received several requests from you. Please wait a moment before sending another — or call us directly and we'll sort it out straight away.",
     sendAnother: "Send another request",
     required: "required",
     errName: "Please enter your name.",
