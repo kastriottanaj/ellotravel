@@ -14,6 +14,12 @@
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
+  "comment:overrides": "Each of these is a transitive dependency whose parent has no fixed release to upgrade to. sharp <0.35 inherits four libvips CVEs and postcss is behind its own advisories, both reached through next, which is already at its latest version. minimatch is the eslint plugins' glob matcher: they pin the 3.x line, which pulls a brace-expansion with a DoS advisory that is only fixed in 5.0.8 — and overriding brace-expansion directly breaks minimatch 3 outright, because 5.x changed its export shape. Moving minimatch itself to 10.x gets the fixed brace-expansion with an API the plugins still work against. Drop each entry once its parent ships a release that already pins at or above it.",
+  "overrides": {
+    "sharp": "^0.35.0",
+    "postcss": "^8.5.23",
+    "minimatch": "^10.2.5"
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
